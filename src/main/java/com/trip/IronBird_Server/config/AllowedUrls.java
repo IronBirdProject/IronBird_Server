@@ -9,6 +9,8 @@ public class AllowedUrls {
             "/api/v1/posts/**",
             "/api/v1/replies/**",
             "/login",
-            "/auth/login/kakao/**"
+            "/auth/login/kakao/**",
+            "/api/auth/**", // Use 'requestMatchers' instead of 'antMatchers'
+            "/api/test/all"
     };
 }

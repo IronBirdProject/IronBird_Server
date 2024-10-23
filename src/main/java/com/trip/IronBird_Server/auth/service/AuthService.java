@@ -9,6 +9,4 @@ import org.springframework.stereotype.Service;
 public class AuthService {
 
     private final PasswordEncoder passwordEncoder;
-
-
 }
