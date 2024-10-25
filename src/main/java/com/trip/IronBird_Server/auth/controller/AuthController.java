@@ -26,15 +26,6 @@ public class AuthController {
     private final JwtUtil jwtUtil;
 
 
-
-    // Kakao Login Auth Controller
-    @GetMapping("/auth/login/kakao")
-    public ResponseEntity<?> kakaoLogin(@RequestParam("code") String accessCode, HttpServletResponse httpServletResponse){
-        //User user = authService.oAuthLogin(accessCode, httpServletResponse);
-
-        return null;
-    }
-
     @PostMapping("/api/auth/signin")
     public String authenticateUser(@RequestBody User user){
         Authentication authentication = authenticationManager.authenticate(
