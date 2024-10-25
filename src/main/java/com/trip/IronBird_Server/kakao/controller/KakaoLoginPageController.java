@@ -23,4 +23,5 @@ public class KakaoLoginPageController {
 
         return "login";
     }
+
 }

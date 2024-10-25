@@ -21,11 +21,18 @@ public class KakaoLoginController {
 
     @GetMapping("/callback")
     public ResponseEntity<?> callback(@RequestParam("code") String code) {
-        String accessToken = kakaoService.getAccessTokenFromKakao(code);
+        System.out.println("인가 코드"+ code);
 
+        //accessToken from kakao
+        String accessToken = kakaoService.getAccessTokenFromKakao(code);
+        log.info("accessToken : {}",accessToken);
+
+        //사용자 정보 가져오기
         KakaoUserInfoResponseDto userInfo = kakaoService.getUserInfo(accessToken);
 
         // User 로그인, 또는 회원가입 로직 추가
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
+
 }
