@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/login")
 public class KakaoLoginPageController {
 
-    @Value("${spring.security.oauth2.client.registration.kakao.client-secret}")
+    @Value("${spring.security.oauth2.client.registration.kakao.client-id}")
     private String client_id;
 
     @Value("${spring.security.oauth2.client.registration.kakao.redirect-uri}")
