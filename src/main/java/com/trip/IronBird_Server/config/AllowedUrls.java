@@ -9,7 +9,7 @@ public class AllowedUrls {
             "/api/v1/posts/**",
             "/api/v1/replies/**",
             "/login",
-            "/login/page",
+            "/login/**",
             "/auth/login/kakao",
             "/api/auth/**", // Use 'requestMatchers' instead of 'antMatchers'
             "/api/test/all"

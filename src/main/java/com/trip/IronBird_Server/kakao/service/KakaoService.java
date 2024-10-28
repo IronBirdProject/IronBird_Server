@@ -90,5 +90,4 @@ public class KakaoService {
 
         return userInfo;
     }
-
 }

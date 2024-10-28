@@ -1,28 +1,36 @@
 package com.trip.IronBird_Server.kakao.controller;
 
+import com.trip.IronBird_Server.kakao.dto.KakaoUserInfoResponseDto;
 import com.trip.IronBird_Server.kakao.service.KakaoService;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.IOException;
+
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/auth")
+@RequestMapping("")
 public class KakaoLoginController {
 
     private final KakaoService kakaoService;
 
+    @GetMapping("/callback")
+    public ResponseEntity<?> callback(@RequestParam("code") String code) {
+        String accessToken = kakaoService.getAccessTokenFromKakao(code);
 
-//    @GetMapping("/callback")
-//    public ResponseEntity<?> getKakaoAuthorizeCode(@RequestParam("code") String authorizeCode, @RequestParam(value = "type", defaultValue = "kakao") String type) {
-//        log.info("[{} login] authorizeCode : {}", type, authorizeCode);
-//        return kakaoService.signIn(authorizeCode, type);
-//    }
+        KakaoUserInfoResponseDto userInfo = kakaoService.getUserInfo(accessToken);
 
+        // User 로그인, 또는 회원가입 로직 추가
+        return new ResponseEntity<>(HttpStatus.OK);
+
+    }
 
 }
