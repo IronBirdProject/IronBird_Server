@@ -10,12 +10,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatusCode;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.servlet.view.RedirectView;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -28,25 +26,34 @@ import java.security.InvalidParameterException;
 public class KakaoService {
 
     private final String clientId;
-    private final WebClient webClient;
+    private final String redirectUri;
+    private final WebClient kakaoAuthClient;
+    private final WebClient kakaoApiClient;
 
-    // 생성자에서 clientId와 WebClient를 주입받습니다.
-    public KakaoService(@Value("${spring.security.oauth2.client.registration.kakao.client-id}") String clientId,
-                        WebClient.Builder webClientBuilder) {
+    // 생성자에서 clientId와 redirectUri 및 WebClient 인스턴스를 주입받습니다.
+    public KakaoService(
+            @Value("${spring.security.oauth2.client.registration.kakao.client-id}") String clientId,
+            @Value("${spring.security.oauth2.client.registration.kakao.redirect-uri}") String redirectUri,
+            WebClient.Builder webClientBuilder) {
         this.clientId = clientId;
-        this.webClient = webClientBuilder.build();
+        this.redirectUri = redirectUri;
+        this.kakaoAuthClient = webClientBuilder
+                .baseUrl("https://kauth.kakao.com") // 인증 URL 설정
+                .build();
+        this.kakaoApiClient = webClientBuilder
+                .baseUrl("https://kapi.kakao.com") // API URL 설정
+                .build();
     }
 
     // 카카오 API로부터 액세스 토큰을 가져오는 메서드
     public String getAccessTokenFromKakao(String code) {
-        KakaoTokenResponseDto kakaoTokenResponseDto = webClient.post()
-                .uri(uriBuilder -> uriBuilder
-                        .path("/oauth/token")
-                        .queryParam("grant_type", "authorization_code")
-                        .queryParam("client_id", clientId)
-                        .queryParam("code", code)
-                        .build())
-                .header(HttpHeaders.CONTENT_TYPE, HttpHeaderValues.APPLICATION_X_WWW_FORM_URLENCODED.toString())
+        KakaoTokenResponseDto kakaoTokenResponseDto = kakaoAuthClient.post()
+                .uri("/oauth/token")
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                .body(BodyInserters.fromFormData("grant_type", "authorization_code")
+                        .with("client_id", clientId)
+                        .with("redirect_uri", redirectUri)
+                        .with("code", code))
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, clientResponse ->
                         Mono.error(new InvalidParameterException("Invalid Parameter for Kakao API")))
@@ -66,14 +73,8 @@ public class KakaoService {
 
     // 사용자 정보 조회를 위한 메서드
     public KakaoUserInfoResponseDto getUserInfo(String accessToken) {
-        WebClient userInfoClient = webClient.mutate()
-                .baseUrl("https://kapi.kakao.com") // 다른 API 엔드포인트 사용
-                .build();
-
-        KakaoUserInfoResponseDto userInfo = userInfoClient.get()
-                .uri(uriBuilder -> uriBuilder
-                        .path("/v2/user/me")
-                        .build())
+        KakaoUserInfoResponseDto userInfo = kakaoApiClient.get()
+                .uri("/v2/user/me")
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, clientResponse ->
@@ -91,3 +92,4 @@ public class KakaoService {
         return userInfo;
     }
 }
+
