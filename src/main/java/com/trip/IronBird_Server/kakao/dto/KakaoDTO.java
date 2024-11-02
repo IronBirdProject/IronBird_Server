@@ -6,11 +6,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class KakaoDTO {
 
     @Getter
+    @AllArgsConstructor
     public static class OAuthToken {
         private String access_token;
         private String token_type;
@@ -21,6 +20,7 @@ public class KakaoDTO {
     }
 
     @Getter
+    @NoArgsConstructor // If a no-argument constructor is necessary
     public static class KakaoProfile {
         private Long id;
         private String connected_at;
@@ -49,4 +49,5 @@ public class KakaoDTO {
             }
         }
     }
+
 }
