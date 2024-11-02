@@ -1,12 +1,16 @@
 package com.trip.IronBird_Server.kakao.controller;
 
+import com.trip.IronBird_Server.kakao.service.KakaoService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
+@RequiredArgsConstructor
 @RequestMapping("/login")
 public class KakaoLoginPageController {
 
@@ -16,6 +20,8 @@ public class KakaoLoginPageController {
     @Value("${spring.security.oauth2.client.registration.kakao.redirect-uri}")
     private String redirect_uri;
 
+    private final KakaoService kakaoService;
+
     @GetMapping("/page")
     public String loginPage(Model model) {
         String location = "https://kauth.kakao.com/oauth/authorize?response_type=code&client_id="+client_id+"&redirect_uri="+redirect_uri;
@@ -23,5 +29,8 @@ public class KakaoLoginPageController {
 
         return "login";
     }
+
+
+
 
 }

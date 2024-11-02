@@ -1,22 +1,14 @@
 package com.trip.IronBird_Server.kakao.service;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import com.trip.IronBird_Server.kakao.dto.KakaoTokenResponseDto;
 import com.trip.IronBird_Server.kakao.dto.KakaoUserInfoResponseDto;
-import io.netty.handler.codec.http.HttpHeaderValues;
-import jakarta.servlet.http.HttpSession;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.web.servlet.view.RedirectView;
-import org.springframework.web.util.UriComponentsBuilder;
 import reactor.core.publisher.Mono;
 
 import java.security.InvalidParameterException;
@@ -89,7 +81,24 @@ public class KakaoService {
         log.info("[ Kakao Service ] NickName ---> {} ", userInfo.getKakaoAccount().getProfile().getNickName());
         log.info("[ Kakao Service ] ProfileImageUrl ---> {} ", userInfo.getKakaoAccount().getProfile().getProfileImageUrl());
 
+
         return userInfo;
+    }
+
+    //Kakao Logout 메소드
+    public void KakaoLogout(String accesstoken){
+        KakaoUserInfoResponseDto kakaoUserInfoResponseDto = kakaoApiClient.post()
+                .uri("/v1/user/logout")
+                .header(HttpHeaders.AUTHORIZATION,"Bearer " + accesstoken)
+                .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError, clientResponse ->
+                        Mono.error(new InvalidParameterException("Invalid Parameter for Kakao API")))
+                .onStatus(HttpStatusCode::is5xxServerError, clientResponse ->
+                        Mono.error(new InternalAuthenticationServiceException("Kakao API Internal Server Error")))
+                .bodyToMono(KakaoUserInfoResponseDto.class)
+                .block();
+        log.info("[Kakao Service] Logout Successful for Access Token: {}", accesstoken);
+
     }
 }
 
