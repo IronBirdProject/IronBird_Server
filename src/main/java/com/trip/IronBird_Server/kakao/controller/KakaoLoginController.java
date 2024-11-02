@@ -22,7 +22,7 @@ public class KakaoLoginController {
 
     private final KakaoService kakaoService;
 
-    @GetMapping("/callback")
+    @GetMapping("/auth/login/kakao")
     public ResponseEntity<?> callback(@RequestParam("code") String code) {
         String accessToken = kakaoService.getAccessTokenFromKakao(code);
 

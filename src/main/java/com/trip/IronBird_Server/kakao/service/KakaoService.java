@@ -10,80 +10,81 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatusCode;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
+import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.servlet.view.RedirectView;
 import org.springframework.web.util.UriComponentsBuilder;
 import reactor.core.publisher.Mono;
 
+import java.security.InvalidParameterException;
+
 @Slf4j
-@RequiredArgsConstructor
 @Service
 public class KakaoService {
 
-    private String clientId;
-    private final String KAUTH_TOKEN_URL_HOST ;
-    private final String KAUTH_USER_URL_HOST;
+    private final String clientId;
+    private final String redirectUri;
+    private final WebClient kakaoAuthClient;
+    private final WebClient kakaoApiClient;
 
-    @Autowired
-    public KakaoService(@Value("${spring.security.oauth2.client.registration.kakao.client-id}") String clientId) {
+    // 생성자에서 clientId와 redirectUri 및 WebClient 인스턴스를 주입받습니다.
+    public KakaoService(
+            @Value("${spring.security.oauth2.client.registration.kakao.client-id}") String clientId,
+            @Value("${spring.security.oauth2.client.registration.kakao.redirect-uri}") String redirectUri,
+            WebClient.Builder webClientBuilder) {
         this.clientId = clientId;
-        KAUTH_TOKEN_URL_HOST ="https://kauth.kakao.com";
-        KAUTH_USER_URL_HOST = "https://kapi.kakao.com";
+        this.redirectUri = redirectUri;
+        this.kakaoAuthClient = webClientBuilder
+                .baseUrl("https://kauth.kakao.com") // 인증 URL 설정
+                .build();
+        this.kakaoApiClient = webClientBuilder
+                .baseUrl("https://kapi.kakao.com") // API URL 설정
+                .build();
     }
 
+    // 카카오 API로부터 액세스 토큰을 가져오는 메서드
     public String getAccessTokenFromKakao(String code) {
-
-        KakaoTokenResponseDto kakaoTokenResponseDto = WebClient.create(KAUTH_TOKEN_URL_HOST).post()
-                .uri(uriBuilder -> uriBuilder
-                        .scheme("https")
-                        .path("/oauth/token")
-                        .queryParam("grant_type", "authorization_code")
-                        .queryParam("client_id", clientId)
-                        .queryParam("code", code)
-                        .build(true))
-                .header(HttpHeaders.CONTENT_TYPE, HttpHeaderValues.APPLICATION_X_WWW_FORM_URLENCODED.toString())
+        KakaoTokenResponseDto kakaoTokenResponseDto = kakaoAuthClient.post()
+                .uri("/oauth/token")
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                .body(BodyInserters.fromFormData("grant_type", "authorization_code")
+                        .with("client_id", clientId)
+                        .with("redirect_uri", redirectUri)
+                        .with("code", code))
                 .retrieve()
-                //TODO : Custom Exception
-                .onStatus(HttpStatusCode::is4xxClientError, clientResponse -> Mono.error(new RuntimeException("Invalid Parameter")))
-                .onStatus(HttpStatusCode::is5xxServerError, clientResponse -> Mono.error(new RuntimeException("Internal Server Error")))
+                .onStatus(HttpStatusCode::is4xxClientError, clientResponse ->
+                        Mono.error(new InvalidParameterException("Invalid Parameter for Kakao API")))
+                .onStatus(HttpStatusCode::is5xxServerError, clientResponse ->
+                        Mono.error(new InternalAuthenticationServiceException("Kakao API Internal Server Error")))
                 .bodyToMono(KakaoTokenResponseDto.class)
                 .block();
 
-
+        // 액세스 토큰 및 기타 정보 로깅
         log.info(" [Kakao Service] Access Token ------> {}", kakaoTokenResponseDto.getAccessToken());
         log.info(" [Kakao Service] Refresh Token ------> {}", kakaoTokenResponseDto.getRefreshToken());
-        //제공 조건: OpenID Connect가 활성화 된 앱의 토큰 발급 요청인 경우 또는 scope에 openid를 포함한 추가 항목 동의 받기 요청을 거친 토큰 발급 요청인 경우
         log.info(" [Kakao Service] Id Token ------> {}", kakaoTokenResponseDto.getIdToken());
         log.info(" [Kakao Service] Scope ------> {}", kakaoTokenResponseDto.getScope());
 
         return kakaoTokenResponseDto.getAccessToken();
     }
 
-
-
-
+    // 사용자 정보 조회를 위한 메서드
     public KakaoUserInfoResponseDto getUserInfo(String accessToken) {
-
-        KakaoUserInfoResponseDto userInfo = WebClient.create(KAUTH_USER_URL_HOST)
-                .get()
-                .uri(uriBuilder -> uriBuilder
-                        .scheme("https")
-                        .path("/v2/user/me")
-                        .build(true))
-                .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken) // access token 인가
-                .header(HttpHeaders.CONTENT_TYPE, HttpHeaderValues.APPLICATION_X_WWW_FORM_URLENCODED.toString())
+        KakaoUserInfoResponseDto userInfo = kakaoApiClient.get()
+                .uri("/v2/user/me")
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
                 .retrieve()
-                //TODO : Custom Exception
-                .onStatus(HttpStatusCode::is4xxClientError, clientResponse -> Mono.error(new RuntimeException("Invalid Parameter")))
-                .onStatus(HttpStatusCode::is5xxServerError, clientResponse -> Mono.error(new RuntimeException("Internal Server Error")))
+                .onStatus(HttpStatusCode::is4xxClientError, clientResponse ->
+                        Mono.error(new InvalidParameterException("Invalid Parameter for Kakao API")))
+                .onStatus(HttpStatusCode::is5xxServerError, clientResponse ->
+                        Mono.error(new InternalAuthenticationServiceException("Kakao API Internal Server Error")))
                 .bodyToMono(KakaoUserInfoResponseDto.class)
                 .block();
 
+        // 사용자 정보 로깅
         log.info("[ Kakao Service ] Auth ID ---> {} ", userInfo.getId());
         log.info("[ Kakao Service ] NickName ---> {} ", userInfo.getKakaoAccount().getProfile().getNickName());
         log.info("[ Kakao Service ] ProfileImageUrl ---> {} ", userInfo.getKakaoAccount().getProfile().getProfileImageUrl());
@@ -91,3 +92,4 @@ public class KakaoService {
         return userInfo;
     }
 }
+

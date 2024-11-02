@@ -28,6 +28,12 @@ dependencies {
 	// JWT & Web flux Dependencies
 	implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
+	implementation 'io.netty:netty-resolver-dns-native-macos:4.1.68.Final'
+
+	// https://mvnrepository.com/artifact/io.netty/netty-resolver-dns-native-macos
+	runtimeOnly group: 'io.netty', name: 'netty-resolver-dns-native-macos', version: '4.1.114.Final'
+
+
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
 	testImplementation 'io.projectreactor:reactor-test'
