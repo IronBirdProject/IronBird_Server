@@ -20,7 +20,6 @@ public class KakaoLoginPageController {
     @Value("${spring.security.oauth2.client.registration.kakao.redirect-uri}")
     private String redirect_uri;
 
-    private final KakaoService kakaoService;
 
     @GetMapping("/page")
     public String loginPage(Model model) {
@@ -29,8 +28,6 @@ public class KakaoLoginPageController {
 
         return "login";
     }
-
-
 
 
 }

@@ -11,6 +11,7 @@ public class AllowedUrls {
             "/login",
             "/login/**",
             "/auth/login/kakao",
+            "/auth/**",
             "/api/auth/**", // Use 'requestMatchers' instead of 'antMatchers'
             "/api/test/all"
     };
