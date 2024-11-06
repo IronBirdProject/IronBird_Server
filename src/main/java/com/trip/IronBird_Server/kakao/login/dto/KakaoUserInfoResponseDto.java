@@ -1,4 +1,4 @@
-package com.trip.IronBird_Server.kakao.dto;
+package com.trip.IronBird_Server.kakao.login.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;

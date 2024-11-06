@@ -1,4 +1,4 @@
-package com.trip.IronBird_Server.kakao.service;
+package com.trip.IronBird_Server.kakao.login.service;
 
 import org.springframework.stereotype.Service;
 

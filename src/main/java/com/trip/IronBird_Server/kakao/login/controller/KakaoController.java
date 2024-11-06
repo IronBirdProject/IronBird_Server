@@ -1,14 +1,12 @@
-package com.trip.IronBird_Server.kakao.controller;
+package com.trip.IronBird_Server.kakao.login.controller;
 
-import com.trip.IronBird_Server.kakao.dto.KakaoUserInfoResponseDto;
-import com.trip.IronBird_Server.kakao.service.KakaoService;
+import com.trip.IronBird_Server.kakao.login.dto.KakaoUserInfoResponseDto;
+import com.trip.IronBird_Server.kakao.login.service.KakaoService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.net.URI;
 
 @Slf4j
 @RestController
@@ -26,6 +24,8 @@ public class KakaoController {
         // User 로그인, 또는 회원가입 로직 추가
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
+
 
     //카카오 로그아웃 메소드
     @GetMapping("/auth/logout/kakao")

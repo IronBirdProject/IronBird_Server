@@ -1,7 +1,7 @@
-package com.trip.IronBird_Server.kakao.service;
+package com.trip.IronBird_Server.kakao.login.service;
 
-import com.trip.IronBird_Server.kakao.dto.KakaoTokenResponseDto;
-import com.trip.IronBird_Server.kakao.dto.KakaoUserInfoResponseDto;
+import com.trip.IronBird_Server.kakao.login.dto.KakaoTokenResponseDto;
+import com.trip.IronBird_Server.kakao.login.dto.KakaoUserInfoResponseDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
