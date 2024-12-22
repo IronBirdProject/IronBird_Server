@@ -34,6 +34,7 @@ dependencies {
 	// https://mvnrepository.com/artifact/io.netty/netty-resolver-dns-native-macos
 	runtimeOnly group: 'io.netty', name: 'netty-resolver-dns-native-macos', version: '4.1.114.Final'
 
+	implementation 'io.github.cdimascio:dotenv-java:3.0.0'
 
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
