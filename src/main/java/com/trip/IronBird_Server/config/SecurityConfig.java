@@ -1,7 +1,5 @@
 package com.trip.IronBird_Server.config;
 
-import com.trip.IronBird_Server.oauth.handler.CustomAuthExceptionHandler;
-import com.trip.IronBird_Server.oauth.handler.CustomOAuth2SuccessHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,10 +15,6 @@ import org.springframework.security.web.SecurityFilterChain;
 @RequiredArgsConstructor
 @EnableWebSecurity
 public class SecurityConfig {
-
-
-    private final CustomOAuth2SuccessHandler customOAuth2SuccessHandler;
-    private final CustomAuthExceptionHandler customAuthExceptionHandler;
 
 
     @Bean
@@ -48,10 +42,6 @@ public class SecurityConfig {
                 .cors(AbstractHttpConfigurer::disable) //cors disable
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .logout((logout) -> logout.permitAll()); //http Basic certification disable
-
-        http.oauth2Login((config)-> config
-                .successHandler(customOAuth2SuccessHandler)
-                .failureHandler(customAuthExceptionHandler));
 
 
         return http.build();
