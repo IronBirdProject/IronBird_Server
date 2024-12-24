@@ -5,22 +5,26 @@ import java.util.Arrays;
 
 public enum OauthType {
 
-    Kakao("kakao");
+    NONE,   //Local Services User
+    KAKAO,
+    GOOGLE,
+    NAVER
 
-    private final String type;
+//
+//    private final String type;
+//
+//    OauthType(String type) {
+//        this.type = type;
+//    }
 
-    OauthType(String type) {
-        this.type = type;
-    }
-
-    public static OauthType ofType(String type) {
-        return Arrays.stream(values())
-                .filter(oauthType -> oauthType.type.equals(type))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("No such OauthType"));
-    }
-
-    public String getType() {
-        return type;
-    }
+//    public static OauthType ofType(String type) {
+//        return Arrays.stream(values())
+//                .filter(oauthType -> oauthType.type.equals(type))
+//                .findFirst()
+//                .orElseThrow(() -> new IllegalArgumentException("No such OauthType"));
+//    }
+//
+//    public String getType() {
+//        return type;
+//    }
 }
