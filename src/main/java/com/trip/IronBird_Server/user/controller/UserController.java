@@ -1,6 +1,7 @@
 package com.trip.IronBird_Server.user.controller;
 
 import com.trip.IronBird_Server.jwt.dto.TokenDto;
+import com.trip.IronBird_Server.jwt.service.JwtServices;
 import com.trip.IronBird_Server.user.dto.RegisterDto;
 import com.trip.IronBird_Server.user.repository.UserRepository;
 import com.trip.IronBird_Server.user.services.UserService;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
 
     private final UserService userService;
+    private final JwtServices jwtService;
 
 
 
@@ -37,7 +39,7 @@ public class UserController {
 
     @PostMapping("/login")
     public ResponseEntity<TokenDto> login(@RequestBody RegisterDto loginDto){
-        TokenDto tokenDto = userService.login(loginDto.getEmail(), loginDto.getPassword());
+        TokenDto tokenDto = jwtService.login(loginDto.getEmail(), loginDto.getPassword());
 
         return ResponseEntity.ok(tokenDto);
     }
