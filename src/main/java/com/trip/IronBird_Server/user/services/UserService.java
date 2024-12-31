@@ -40,21 +40,4 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    //로그인
-    public TokenDto login(String email, String password){
-
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(()-> new IllegalArgumentException("존재하지 않는 이메일 입니다."));
-
-        if(!passwordEncoder.matches(password, user.getPassword())){
-            throw new IllegalArgumentException("비밀번호가 틀립니다.");
-        }
-
-        // 사용자 권한 및 정보 설정
-        Map<String, Object> claims = new HashMap<>();
-        claims.put("sub",user.getEmail());
-        claims.put("role","ROLE_USER");
-
-        return tokenProvider.generateTokenDto(claims);
-    }
 }
