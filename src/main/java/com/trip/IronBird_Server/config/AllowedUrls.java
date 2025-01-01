@@ -13,6 +13,7 @@ public class AllowedUrls {
             "/auth/login/kakao",
             "/auth/**",
             "/api/auth/**", // Use 'requestMatchers' instead of 'antMatchers'
-            "/api/test/all"
+            "/api/test/all",
+            "/h2-console/**"
     };
 }

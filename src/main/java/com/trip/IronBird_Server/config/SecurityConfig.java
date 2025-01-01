@@ -34,10 +34,6 @@ public class SecurityConfig {
                         .requestMatchers((AllowedUrls.allowUrls)).permitAll()
                         .anyRequest().authenticated()
                 )
-                .formLogin((form)-> form
-                        .loginPage("/login")
-                        .permitAll()
-                )
                 .csrf(AbstractHttpConfigurer::disable) //csrf disable
                 .cors(AbstractHttpConfigurer::disable) //cors disable
                 .httpBasic(AbstractHttpConfigurer::disable)
