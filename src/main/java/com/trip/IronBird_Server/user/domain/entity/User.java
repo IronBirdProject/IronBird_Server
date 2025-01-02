@@ -40,7 +40,7 @@ public class User {
                 .build();
     }
 
-    public User createSocialUser(String email, String oauthId,OauthType oauthType, String socialProfilePic){
+    public static User createSocialUser(String email, String oauthId,OauthType oauthType, String socialProfilePic){
         return User.builder()
                 .email(email)
                 .oauthId(oauthId)
