@@ -15,5 +15,6 @@ public class AllowedUrls {
             "/api/auth/**", // Use 'requestMatchers' instead of 'antMatchers'
             "/api/test/all",
             "/h2-console/**",
+            "/api/plan/**",
     };
 }
