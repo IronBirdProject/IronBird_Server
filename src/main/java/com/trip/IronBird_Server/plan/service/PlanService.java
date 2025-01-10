@@ -5,11 +5,13 @@ import com.trip.IronBird_Server.plan.dto.PlanDto;
 import com.trip.IronBird_Server.plan.repository.PlanRepository;
 import com.trip.IronBird_Server.user.domain.entity.User;
 import com.trip.IronBird_Server.user.repository.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -72,6 +74,39 @@ public class PlanService {
                 .build();
     }
 
+    //플랜 수정 서비스
+    @Transactional
+    public PlanDto updatePlan(Long id,PlanDto planDto){
+
+        //기존 게시물 조회
+        Plan exitPlan = planRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Plan Not found with ID : " + id));
+
+        //변경할 데이터 가져와서 엔티티에 등록
+        exitPlan.setStartedTime(planDto.getStartedTime());
+        exitPlan.setEndTime(planDto.getEndTime());
+
+        //수정된 데이터 저장
+        Plan updatePlan = planRepository.save(exitPlan);
+
+        // 저장된 결과를 PlanDto로 변환하여 반환
+        return PlanDto.builder()
+                .id(updatePlan.getId())
+                .userId(updatePlan.getUser().getId())
+                .startedTime(updatePlan.getStartedTime())
+                .endTime(updatePlan.getEndTime())
+                .createdTime(updatePlan.getCreated_time())
+                .modifiedTime(updatePlan.getModified_time())
+                .build();
+    }
+
+    //플랜 삭제 서비스
+    public void deletePlan(Long id){
+        Plan plan = planRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("게시물을 찾을 수 없습니다."));
+
+        planRepository.delete(plan);
+    }
 
 
 }

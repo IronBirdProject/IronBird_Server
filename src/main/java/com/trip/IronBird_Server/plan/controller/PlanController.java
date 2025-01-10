@@ -1,5 +1,6 @@
 package com.trip.IronBird_Server.plan.controller;
 
+import com.trip.IronBird_Server.plan.domain.Plan;
 import com.trip.IronBird_Server.plan.dto.PlanDto;
 import com.trip.IronBird_Server.plan.service.PlanService;
 import lombok.RequiredArgsConstructor;
@@ -36,12 +37,43 @@ public class PlanController {
         return planService.getPlansByUserId(userId);
     }
 
+    /**
+     @
+     플랜 생성 컨트롤러
+     **/
     @PostMapping("/create")
     public ResponseEntity<?> createPlan(@RequestBody PlanDto planDto){
         PlanDto createdPlan = planService.createPlan(planDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdPlan);
     }
 
+
+    /**
+     @
+     특정 유저 플랜 수정
+     **/
+    @PutMapping("/user/{userId}/plan/{planId}")
+    public ResponseEntity<PlanDto> updatePlanById(@PathVariable("userId") Long userId,
+                                                  @PathVariable("planId") Long planId,
+                                                  @RequestBody PlanDto planDto){
+        PlanDto updatePlan = planService.updatePlan(planId, planDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(updatePlan);
+    }
+
+    /**
+     @
+     특정 유저 플랜 삭제
+     **/
+    @DeleteMapping("/{planId}")
+    public ResponseEntity<?> deletePlan(@PathVariable("planId") Long PlanId){
+        try {
+            planService.deletePlan(PlanId);
+
+            return ResponseEntity.ok("게시물이 삭제되었습니다.");
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("게시물을 삭제되었습니다.");
+        }
+    }
 
 
 }
