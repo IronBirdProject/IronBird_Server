@@ -6,6 +6,7 @@ import com.trip.IronBird_Server.plan.service.PlanService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -42,8 +43,9 @@ public class PlanController {
      플랜 생성 컨트롤러
      **/
     @PostMapping("/create")
-    public ResponseEntity<?> createPlan(@RequestBody PlanDto planDto){
-        PlanDto createdPlan = planService.createPlan(planDto);
+    public ResponseEntity<?> createPlan(@RequestBody PlanDto planDto,
+                                        @AuthenticationPrincipal Long userIdFromToken){
+        PlanDto createdPlan = planService.createPlan(planDto,userIdFromToken);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdPlan);
     }
 
@@ -52,11 +54,11 @@ public class PlanController {
      @
      특정 유저 플랜 수정
      **/
-    @PutMapping("/user/{userId}/plan/{planId}")
-    public ResponseEntity<PlanDto> updatePlanById(@PathVariable("userId") Long userId,
-                                                  @PathVariable("planId") Long planId,
-                                                  @RequestBody PlanDto planDto){
-        PlanDto updatePlan = planService.updatePlan(planId, planDto);
+    @PutMapping("/{planId}")
+    public ResponseEntity<PlanDto> updatePlanById(@PathVariable("planId") Long planId,
+                                                  @RequestBody PlanDto planDto,
+                                                  @AuthenticationPrincipal Long userIdFromToken){
+        PlanDto updatePlan = planService.updatePlan(planId, planDto,userIdFromToken);
         return ResponseEntity.status(HttpStatus.CREATED).body(updatePlan);
     }
 
@@ -65,7 +67,7 @@ public class PlanController {
      특정 유저 플랜 삭제
      **/
     @DeleteMapping("/{planId}")
-    public ResponseEntity<?> deletePlan(@PathVariable("planId") Long PlanId){
+    public ResponseEntity<String> deletePlan(@PathVariable("planId") Long PlanId){
         try {
             planService.deletePlan(PlanId);
 
