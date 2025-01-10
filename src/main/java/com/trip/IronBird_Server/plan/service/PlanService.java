@@ -1,5 +1,6 @@
 package com.trip.IronBird_Server.plan.service;
 
+import com.trip.IronBird_Server.common.exception.UnauthorizedException;
 import com.trip.IronBird_Server.plan.domain.Plan;
 import com.trip.IronBird_Server.plan.dto.PlanDto;
 import com.trip.IronBird_Server.plan.repository.PlanRepository;
@@ -7,11 +8,9 @@ import com.trip.IronBird_Server.user.domain.entity.User;
 import com.trip.IronBird_Server.user.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -52,15 +51,17 @@ public class PlanService {
 
     //플랜 생성 서비스
     @Transactional
-    public PlanDto createPlan(PlanDto planDto){
+    public PlanDto createPlan(PlanDto planDto, Long userIdFromToken){
         User user = userRepository.findById(planDto.getUserId())
-                .orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + planDto.getUserId()));
+                .orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + userIdFromToken));
+
 
         Plan plan = Plan.builder()
                 .startedTime(planDto.getStartedTime())
                 .endTime(planDto.getEndTime())
                 .user(user) //user 설정
                 .build();
+
 
         //User 는 외부에서 가져오기
         Plan savedPlan = planRepository.save(plan);
@@ -76,11 +77,15 @@ public class PlanService {
 
     //플랜 수정 서비스
     @Transactional
-    public PlanDto updatePlan(Long id,PlanDto planDto){
+    public PlanDto updatePlan(Long id,PlanDto planDto, Long userIdFromToken){
 
         //기존 게시물 조회
         Plan exitPlan = planRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Plan Not found with ID : " + id));
+
+        if(!exitPlan.getUser().getId().equals(userIdFromToken)){
+            throw new UnauthorizedException("User is not authorized to update this plan.");
+        }
 
         //변경할 데이터 가져와서 엔티티에 등록
         exitPlan.setStartedTime(planDto.getStartedTime());
