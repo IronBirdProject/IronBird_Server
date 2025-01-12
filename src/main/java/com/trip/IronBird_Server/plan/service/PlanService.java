@@ -49,6 +49,7 @@ public class PlanService {
                 .collect(Collectors.toList());
     }
 
+
     //플랜 생성 서비스
     @Transactional
     public PlanDto createPlan(PlanDto planDto, Long userIdFromToken){
