@@ -16,10 +16,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -75,26 +72,29 @@ public class TokenProvider {
                 .refreshToken(refreshToken)
                 .build();
     }
-    
-    public Authentication getAuthentication(String accesToken){
-        // 토큰 복호화
-        Claims claims = parseClaims(accesToken);
 
-        if(claims.get(AUTHORITIES_KEY) == null){
-            throw new RuntimeException("권한 정보가 없는 토큰입니다.");
+    public Authentication getAuthentication(String accessToken) {
+        // 토큰 복호화
+        Claims claims = parseClaims(accessToken);
+
+        // 권한 정보가 없을 경우 기본 권한을 설정하거나 예외 처리
+        Collection<? extends GrantedAuthority> authorities;
+        if (claims.get(AUTHORITIES_KEY) == null || claims.get(AUTHORITIES_KEY).toString().isEmpty()) {
+            log.warn("경고: 권한 정보가 없는 토큰입니다. 기본 USER 권한을 설정합니다.");
+            authorities = List.of(new SimpleGrantedAuthority("ROLE_USER"));  // 기본 권한 설정
+        } else {
+            // 클레임에서 권한 정보 가져오기
+            authorities = Arrays.stream(claims.get(AUTHORITIES_KEY).toString().split(","))
+                    .map(SimpleGrantedAuthority::new)
+                    .collect(Collectors.toList());
         }
 
-        //클레임에서 권한 정보 가져오기
-        Collection<? extends GrantedAuthority> authorities =
-                Arrays.stream(claims.get(AUTHORITIES_KEY).toString().split(","))
-                        .map(SimpleGrantedAuthority::new)
-                        .collect(Collectors.toList());
-
-        //UserDetails 객체를 만들어서 Authentication 리턴
+        // UserDetails 객체를 만들어서 Authentication 반환
         UserDetails principal = new User(claims.getSubject(), "", authorities);
 
         return new UsernamePasswordAuthenticationToken(principal, "", authorities);
     }
+
 
     public boolean validateToken(String token){
         try {

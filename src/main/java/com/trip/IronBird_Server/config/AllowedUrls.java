@@ -16,5 +16,6 @@ public class AllowedUrls {
             "/api/test/all",
             "/h2-console/**",
             "/api/plan/**",
+            "/api/post/**",
     };
 }

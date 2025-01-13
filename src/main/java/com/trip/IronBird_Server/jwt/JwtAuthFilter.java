@@ -8,11 +8,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
+@Component
 @RequiredArgsConstructor
 @Slf4j
 public class JwtAuthFilter extends OncePerRequestFilter {
@@ -38,7 +40,9 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         log.info("JWT Filter IN");
         if(token != null && tokenProvider.validateToken(token)){
             Authentication authentication = tokenProvider.getAuthentication(token);
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+            if(authentication != null){ //null 체크 추가
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+            }
         }
 
         String uri = request.getRequestURI();
@@ -47,6 +51,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
             return;
         }
+
+        // 필터 체인 흐름 유지
         filterChain.doFilter(request, response);
     }
 
