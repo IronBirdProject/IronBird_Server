@@ -8,6 +8,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Data
 @NoArgsConstructor
@@ -34,6 +36,10 @@ public class Post {
     @JoinColumn(name = "plan_id")
     private Plan plan;
 
+    @Column(name = "uploadTime")
+    private LocalDateTime createTime;
 
+    @Column(name = "modification_Time")
+    private LocalDateTime modifyTime;
 
 }
