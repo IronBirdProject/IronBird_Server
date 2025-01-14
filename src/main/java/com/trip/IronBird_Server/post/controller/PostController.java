@@ -41,6 +41,17 @@ public class PostController {
         PostDto createdPost = postService.createPost(postDto, email);
         return new ResponseEntity<>(createdPost, HttpStatus.CREATED);
     }
+    /**
+     * 포스팅 수정 컨트롤러
+     */
+    @PutMapping("/update/{postId}")
+    public ResponseEntity<?> updatePost(@RequestBody PostDto postDto,
+                                        @PathVariable("postId") Long postId){
+        PostDto updateDto = postService.updatePost(postId, postDto);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(updateDto);
+    }
+
 
 
 

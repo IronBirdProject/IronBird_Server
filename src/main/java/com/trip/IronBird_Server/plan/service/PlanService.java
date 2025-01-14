@@ -80,7 +80,7 @@ public class PlanService {
     @Transactional
     public PlanDto updatePlan(Long id,PlanDto planDto, Long userIdFromToken){
 
-        //기존 게시물 조회
+        //기존 프랜 조회
         Plan exitPlan = planRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Plan Not found with ID : " + id));
 

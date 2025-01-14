@@ -54,7 +54,7 @@ public class PlanController {
      @
      특정 유저 플랜 수정
      **/
-    @PutMapping("/{planId}")
+    @PutMapping("/update/{planId}")
     public ResponseEntity<PlanDto> updatePlanById(@PathVariable("planId") Long planId,
                                                   @RequestBody PlanDto planDto,
                                                   @AuthenticationPrincipal Long userIdFromToken){
