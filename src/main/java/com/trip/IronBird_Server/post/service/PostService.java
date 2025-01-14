@@ -1,6 +1,9 @@
 package com.trip.IronBird_Server.post.service;
 
+import com.google.api.gax.rpc.UnauthenticatedException;
+import com.trip.IronBird_Server.common.exception.UnauthorizedException;
 import com.trip.IronBird_Server.plan.domain.Plan;
+import com.trip.IronBird_Server.plan.dto.PlanDto;
 import com.trip.IronBird_Server.plan.repository.PlanRepository;
 import com.trip.IronBird_Server.post.domain.Post;
 import com.trip.IronBird_Server.post.dto.PostDto;
@@ -11,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -27,6 +31,7 @@ public class PostService {
     private final PlanRepository planRepository;
 
 
+    // 모든 게시물 조회
     public List<PostDto> getAllPosts(){
         return postRepository.findAll().stream()
                 .map(post -> PostDto.builder()
@@ -42,6 +47,7 @@ public class PostService {
     }
 
 
+    // 게시물 생성
     public PostDto createPost(PostDto postDto, String email){
         //사용자 조회
         User user = userRepository.findByEmail(email)
@@ -83,5 +89,33 @@ public class PostService {
                 .modifyTime(post.getModifyTime())
                 .build();
     }
+
+    // 게시물 수정
+    @Transactional
+    public PostDto updatePost(Long id, PostDto postDto){
+
+        //기존 게시물 조회
+        Post exitPost = postRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Post Not Found"));
+
+
+        exitPost.setTitle(postDto.getTitle());
+        exitPost.setDetail(postDto.getDetail());
+        exitPost.setModifyTime(LocalDateTime.now());
+
+        //수정된 데이터 저장
+        Post updatePost = postRepository.save(exitPost);
+
+        // 저장된 결과를 PostDto로 반환
+        return PostDto.builder()
+                .id(updatePost.getId())
+                .userId(updatePost.getUser().getId())
+                .title(updatePost.getTitle())
+                .detail(updatePost.getDetail())
+                .planId(updatePost.getPlan().getId())
+                .modifyTime(updatePost.getModifyTime())
+                .build();
+    }
+
 
 }
