@@ -1,15 +1,12 @@
 package com.trip.IronBird_Server.user.controller;
 
-import com.trip.IronBird_Server.config.supabase.service.SupaBaseService;
 import com.trip.IronBird_Server.jwt.dto.TokenDto;
 import com.trip.IronBird_Server.jwt.service.JwtServices;
 import com.trip.IronBird_Server.user.dto.RegisterDto;
-import com.trip.IronBird_Server.user.repository.UserRepository;
 import com.trip.IronBird_Server.user.services.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -19,7 +16,6 @@ public class UserController {
 
     private final UserService userService;
     private final JwtServices jwtService;
-    private final SupaBaseService supaBaseService;
 
 
 

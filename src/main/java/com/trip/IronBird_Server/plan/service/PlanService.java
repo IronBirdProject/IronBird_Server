@@ -27,8 +27,8 @@ public class PlanService {
                 .map(plan -> PlanDto.builder()
                         .id(plan.getId())
                         .userId(plan.getUser().getId())
-                        .startedTime(plan.getStartedTime())
-                        .endTime(plan.getEndTime())
+                        .startedDate(plan.getStartedDate())
+                        .endDate(plan.getEndDate())
                         .createdTime(plan.getCreated_time())
                         .modifiedTime(plan.getModified_time())
                         .build())
@@ -41,8 +41,8 @@ public class PlanService {
                 .map(plan -> PlanDto.builder()
                         .id(plan.getId())
                         .userId(plan.getUser().getId())
-                        .startedTime(plan.getStartedTime())
-                        .endTime(plan.getEndTime())
+                        .startedDate(plan.getStartedDate())
+                        .endDate(plan.getEndDate())
                         .createdTime(plan.getCreated_time())
                         .modifiedTime(plan.getModified_time())
                         .build())
@@ -58,8 +58,8 @@ public class PlanService {
 
 
         Plan plan = Plan.builder()
-                .startedTime(planDto.getStartedTime())
-                .endTime(planDto.getEndTime())
+                .startedDate(planDto.getStartedDate())
+                .endDate(planDto.getEndDate())
                 .user(user) //user 설정
                 .build();
 
@@ -69,8 +69,8 @@ public class PlanService {
         return PlanDto.builder()
                 .id(savedPlan.getId())
                 .userId(savedPlan.getUser().getId())
-                .startedTime(savedPlan.getStartedTime())
-                .endTime(savedPlan.getEndTime())
+                .startedDate(savedPlan.getStartedDate())
+                .endDate(savedPlan.getEndDate())
                 .createdTime(savedPlan.getCreated_time())
                 .modifiedTime(savedPlan.getModified_time())
                 .build();
@@ -89,8 +89,8 @@ public class PlanService {
         }
 
         //변경할 데이터 가져와서 엔티티에 등록
-        exitPlan.setStartedTime(planDto.getStartedTime());
-        exitPlan.setEndTime(planDto.getEndTime());
+        exitPlan.setStartedDate(planDto.getStartedDate());
+        exitPlan.setEndDate(planDto.getEndDate());
 
         //수정된 데이터 저장
         Plan updatePlan = planRepository.save(exitPlan);
@@ -99,8 +99,8 @@ public class PlanService {
         return PlanDto.builder()
                 .id(updatePlan.getId())
                 .userId(updatePlan.getUser().getId())
-                .startedTime(updatePlan.getStartedTime())
-                .endTime(updatePlan.getEndTime())
+                .startedDate(updatePlan.getStartedDate())
+                .endDate(updatePlan.getEndDate())
                 .createdTime(updatePlan.getCreated_time())
                 .modifiedTime(updatePlan.getModified_time())
                 .build();

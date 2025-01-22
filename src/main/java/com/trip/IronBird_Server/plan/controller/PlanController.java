@@ -71,9 +71,9 @@ public class PlanController {
         try {
             planService.deletePlan(PlanId);
 
-            return ResponseEntity.ok("게시물이 삭제되었습니다.");
+            return ResponseEntity.ok("플랜이 삭제되었습니다.");
         }catch (Exception e){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("게시물을 삭제되었습니다.");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("플랜이 삭제되었습니다.");
         }
     }
 

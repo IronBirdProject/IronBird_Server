@@ -16,8 +16,8 @@ import java.time.LocalDateTime;
 public class PlanDto {
     private Long id;
     private Long userId;
-    private String startedTime;
-    private String endTime;
+    private String startedDate;
+    private String endDate;
     private LocalDateTime createdTime;
     private LocalDateTime modifiedTime;
 }
