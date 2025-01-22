@@ -52,6 +52,21 @@ public class PostController {
         return ResponseEntity.status(HttpStatus.CREATED).body(updateDto);
     }
 
+    /**
+     * 포스팅 삭제 컨트롤러
+     */
+    @DeleteMapping("/{postId}")
+    public ResponseEntity<String> deletePost(@PathVariable("postId") Long postId){
+        try{
+            postService.deletePost(postId);
+
+            return ResponseEntity.ok("게시물이 삭제되었습니다.");
+        }catch (Exception e){
+
+            return ResponseEntity.status(HttpStatus.CREATED).body("게시물이 삭제되었습니다.");
+        }
+
+    }
 
 
 

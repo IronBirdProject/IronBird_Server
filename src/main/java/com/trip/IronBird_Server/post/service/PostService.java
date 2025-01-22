@@ -118,4 +118,14 @@ public class PostService {
     }
 
 
+    //게시물 삭제
+    public void deletePost(Long id){
+        Post post = postRepository.findById(id)
+                .orElseThrow(()-> new RuntimeException("게시물을 찾을 수 없습니다."));
+
+        postRepository.delete(post);
+
+    }
+
+
 }

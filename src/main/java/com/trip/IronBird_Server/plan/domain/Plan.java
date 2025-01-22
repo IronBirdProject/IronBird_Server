@@ -24,14 +24,14 @@ public class Plan {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @Column(name="started_time")
-    private String startedTime;
+    @Column(name="started_Date")
+    private String startedDate;
 
-    @Column(name="end_time")
-    private String endTime;
+    @Column(name="end_Date")
+    private String endDate;
 
     @CreationTimestamp
     @Column(name="created_time")
