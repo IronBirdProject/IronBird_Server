@@ -68,7 +68,7 @@ public class PlanService {
         Plan savedPlan = planRepository.save(plan);
         return PlanDto.builder()
                 .id(savedPlan.getId())
-                .userId(savedPlan.getUser().getId())
+                .userId(userRepository.findById(userIdFromToken).orElseThrow(() -> new EntityNotFoundException("User not found")).getId())
                 .startedDate(savedPlan.getStartedDate())
                 .endDate(savedPlan.getEndDate())
                 .createdTime(savedPlan.getCreated_time())
@@ -78,15 +78,15 @@ public class PlanService {
 
     //플랜 수정 서비스
     @Transactional
-    public PlanDto updatePlan(Long id,PlanDto planDto, Long userIdFromToken){
+    public PlanDto updatePlan(Long id,PlanDto planDto){
 
-        //기존 프랜 조회
+        //기존 플랜 조회
         Plan exitPlan = planRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Plan Not found with ID : " + id));
 
-        if(!exitPlan.getUser().getId().equals(userIdFromToken)){
-            throw new UnauthorizedException("User is not authorized to update this plan.");
-        }
+//        if(!exitPlan.getUser().getId().equals(userId)){
+//            throw new UnauthorizedException("User is not authorized to update this plan.");
+//        }
 
         //변경할 데이터 가져와서 엔티티에 등록
         exitPlan.setStartedDate(planDto.getStartedDate());
