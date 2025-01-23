@@ -56,9 +56,8 @@ public class PlanController {
      **/
     @PutMapping("/update/{planId}")
     public ResponseEntity<PlanDto> updatePlanById(@PathVariable("planId") Long planId,
-                                                  @RequestBody PlanDto planDto,
-                                                  @AuthenticationPrincipal Long userIdFromToken){
-        PlanDto updatePlan = planService.updatePlan(planId, planDto,userIdFromToken);
+                                                  @RequestBody PlanDto planDto){
+        PlanDto updatePlan = planService.updatePlan(planId, planDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(updatePlan);
     }
 
