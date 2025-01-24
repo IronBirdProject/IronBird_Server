@@ -1,11 +1,10 @@
 package com.trip.IronBird_Server.plan.service;
 
-import com.trip.IronBird_Server.common.exception.UnauthorizedException;
 import com.trip.IronBird_Server.plan.domain.Plan;
 import com.trip.IronBird_Server.plan.dto.PlanDto;
 import com.trip.IronBird_Server.plan.repository.PlanRepository;
 import com.trip.IronBird_Server.user.domain.entity.User;
-import com.trip.IronBird_Server.user.repository.UserRepository;
+import com.trip.IronBird_Server.user.infrastructure.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

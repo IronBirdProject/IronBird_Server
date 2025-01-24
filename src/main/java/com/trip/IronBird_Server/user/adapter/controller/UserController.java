@@ -1,9 +1,9 @@
-package com.trip.IronBird_Server.user.controller;
+package com.trip.IronBird_Server.user.adapter.controller;
 
 import com.trip.IronBird_Server.jwt.dto.TokenDto;
 import com.trip.IronBird_Server.jwt.service.JwtServices;
-import com.trip.IronBird_Server.user.dto.RegisterDto;
-import com.trip.IronBird_Server.user.services.UserService;
+import com.trip.IronBird_Server.user.adapter.dto.RegisterDto;
+import com.trip.IronBird_Server.user.application.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
