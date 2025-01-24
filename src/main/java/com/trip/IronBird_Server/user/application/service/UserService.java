@@ -1,16 +1,11 @@
-package com.trip.IronBird_Server.user.services;
+package com.trip.IronBird_Server.user.application.service;
 
-import com.trip.IronBird_Server.jwt.TokenProvider;
-import com.trip.IronBird_Server.jwt.dto.TokenDto;
 import com.trip.IronBird_Server.user.domain.entity.User;
 import com.trip.IronBird_Server.user.domain.modeltype.OauthType;
-import com.trip.IronBird_Server.user.repository.UserRepository;
+import com.trip.IronBird_Server.user.infrastructure.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @Service
 @RequiredArgsConstructor

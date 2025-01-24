@@ -1,4 +1,4 @@
-package com.trip.IronBird_Server.post.dto;
+package com.trip.IronBird_Server.post.adapter.dto;
 
 import com.trip.IronBird_Server.plan.domain.Plan;
 import com.trip.IronBird_Server.user.domain.entity.User;

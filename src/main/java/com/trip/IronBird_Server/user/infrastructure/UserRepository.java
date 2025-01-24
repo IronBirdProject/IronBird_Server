@@ -1,4 +1,4 @@
-package com.trip.IronBird_Server.user.repository;
+package com.trip.IronBird_Server.user.infrastructure;
 
 import com.trip.IronBird_Server.user.domain.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;

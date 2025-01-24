@@ -1,18 +1,14 @@
-package com.trip.IronBird_Server.post.service;
+package com.trip.IronBird_Server.post.application.service;
 
-import com.google.api.gax.rpc.UnauthenticatedException;
-import com.trip.IronBird_Server.common.exception.UnauthorizedException;
 import com.trip.IronBird_Server.plan.domain.Plan;
-import com.trip.IronBird_Server.plan.dto.PlanDto;
 import com.trip.IronBird_Server.plan.repository.PlanRepository;
 import com.trip.IronBird_Server.post.domain.Post;
-import com.trip.IronBird_Server.post.dto.PostDto;
-import com.trip.IronBird_Server.post.repository.PostRepository;
+import com.trip.IronBird_Server.post.adapter.dto.PostDto;
+import com.trip.IronBird_Server.post.infrastructure.PostRepository;
 import com.trip.IronBird_Server.user.domain.entity.User;
-import com.trip.IronBird_Server.user.repository.UserRepository;
+import com.trip.IronBird_Server.user.infrastructure.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

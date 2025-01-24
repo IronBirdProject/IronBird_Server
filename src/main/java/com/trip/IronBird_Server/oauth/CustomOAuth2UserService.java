@@ -2,7 +2,7 @@ package com.trip.IronBird_Server.oauth;
 
 import com.trip.IronBird_Server.user.domain.entity.User;
 import com.trip.IronBird_Server.user.domain.modeltype.OauthType;
-import com.trip.IronBird_Server.user.repository.UserRepository;
+import com.trip.IronBird_Server.user.infrastructure.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;

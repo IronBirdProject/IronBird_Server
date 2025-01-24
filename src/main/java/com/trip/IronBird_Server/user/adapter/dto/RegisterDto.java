@@ -1,4 +1,4 @@
-package com.trip.IronBird_Server.user.dto;
+package com.trip.IronBird_Server.user.adapter.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

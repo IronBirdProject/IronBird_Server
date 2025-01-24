@@ -1,7 +1,7 @@
-package com.trip.IronBird_Server.post.controller;
+package com.trip.IronBird_Server.post.adapter.controller;
 
-import com.trip.IronBird_Server.post.dto.PostDto;
-import com.trip.IronBird_Server.post.service.PostService;
+import com.trip.IronBird_Server.post.adapter.dto.PostDto;
+import com.trip.IronBird_Server.post.application.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -9,7 +9,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
-import java.security.Principal;
 import java.util.List;
 
 @RestController
