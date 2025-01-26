@@ -1,8 +1,7 @@
-package com.trip.IronBird_Server.plan.controller;
+package com.trip.IronBird_Server.plan.adapter.controller;
 
-import com.trip.IronBird_Server.plan.domain.Plan;
-import com.trip.IronBird_Server.plan.dto.PlanDto;
-import com.trip.IronBird_Server.plan.service.PlanService;
+import com.trip.IronBird_Server.plan.adapter.dto.PlanDto;
+import com.trip.IronBird_Server.plan.application.service.PlanService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
