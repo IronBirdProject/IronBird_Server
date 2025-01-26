@@ -1,4 +1,4 @@
-package com.trip.IronBird_Server.plan.dto;
+package com.trip.IronBird_Server.plan.adapter.dto;
 
 import com.trip.IronBird_Server.plan.domain.Plan;
 import lombok.AllArgsConstructor;
