@@ -1,7 +1,7 @@
 package com.trip.IronBird_Server.post.application.service;
 
 import com.trip.IronBird_Server.plan.domain.Plan;
-import com.trip.IronBird_Server.plan.repository.PlanRepository;
+import com.trip.IronBird_Server.plan.infrastructure.PlanRepository;
 import com.trip.IronBird_Server.post.domain.Post;
 import com.trip.IronBird_Server.post.adapter.dto.PostDto;
 import com.trip.IronBird_Server.post.infrastructure.PostRepository;

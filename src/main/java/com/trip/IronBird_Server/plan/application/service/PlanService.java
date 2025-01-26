@@ -1,8 +1,8 @@
-package com.trip.IronBird_Server.plan.service;
+package com.trip.IronBird_Server.plan.application.service;
 
 import com.trip.IronBird_Server.plan.domain.Plan;
-import com.trip.IronBird_Server.plan.dto.PlanDto;
-import com.trip.IronBird_Server.plan.repository.PlanRepository;
+import com.trip.IronBird_Server.plan.adapter.dto.PlanDto;
+import com.trip.IronBird_Server.plan.infrastructure.PlanRepository;
 import com.trip.IronBird_Server.user.domain.entity.User;
 import com.trip.IronBird_Server.user.infrastructure.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
