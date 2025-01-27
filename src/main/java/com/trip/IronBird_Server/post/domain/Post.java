@@ -42,4 +42,7 @@ public class Post {
     @Column(name = "modification_Time")
     private LocalDateTime modifyTime;
 
+    @Column(name = "liked_count")
+    private Long likeCount = 0L;    // Default = 0;
+
 }
