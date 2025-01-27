@@ -7,6 +7,7 @@ import com.trip.IronBird_Server.post.adapter.dto.PostDto;
 import com.trip.IronBird_Server.post.infrastructure.PostRepository;
 import com.trip.IronBird_Server.user.domain.entity.User;
 import com.trip.IronBird_Server.user.infrastructure.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -122,6 +123,20 @@ public class PostService {
         postRepository.delete(post);
 
     }
+
+
+    /**
+     * 좋아요 관리
+     */
+
+    //좋아요 증가
+    public void incrementLike(Long postId){
+        Post post = postRepository.findById(postId)
+                .orElseThrow(()-> new EntityNotFoundException("Post not found"));
+        post.setLikeCount(post.getLikeCount() + 1);
+        postRepository.save(post);
+    }
+
 
 
 }
