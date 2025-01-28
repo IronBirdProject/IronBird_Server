@@ -5,17 +5,24 @@ import com.trip.IronBird_Server.jwt.dto.TokenDto;
 import com.trip.IronBird_Server.user.domain.entity.User;
 import com.trip.IronBird_Server.user.infrastructure.UserRepository;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.nio.charset.StandardCharsets;
+import java.security.Key;
 import java.util.HashMap;
 import java.util.Map;
 
 import static com.trip.IronBird_Server.jwt.TokenProvider.AUTHORITIES_KEY;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class JwtServices {
 
@@ -24,6 +31,8 @@ public class JwtServices {
     private final PasswordEncoder passwordEncoder;
     private final RedisTemplate<String, Object> redisTemplate;
 
+    @Value("${JWT_SECRET}")
+    private String secertKey;
 
     // 로그인 처리 및 토큰 발급
     public TokenDto login(String email, String password) {
@@ -68,4 +77,35 @@ public class JwtServices {
 
         return tokenProvider.generateTokenDto(newClaims);
     }
+
+    public Long extractUserId(String token) {
+
+        try {// "Bearer " 제거
+            String cleanedToken = token.replace("Bearer ", "");
+            log.info("Cleaned token: {}", cleanedToken);
+
+            // SecretKey 설정
+            Key key = Keys.hmacShaKeyFor(secertKey.getBytes(StandardCharsets.UTF_8));
+
+            // Claims 추출
+            Claims claims = Jwts.parserBuilder()
+                    .setSigningKey(key)
+                    .build()
+                    .parseClaimsJws(cleanedToken)
+                    .getBody();
+            log.info("Extracted claims: {}", claims);
+
+            // 사용자 ID 추출
+            Long userId = Long.parseLong(claims.getSubject());
+            log.info("Extracted userId from claims: {}", userId);
+
+
+            return userId;
+        }catch (Exception e){
+            log.error("Failed to extract userId from token: {}", e.getMessage(), e);
+
+            throw e;
+        }
+    }
+
 }
