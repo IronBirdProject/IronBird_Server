@@ -6,12 +6,15 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Builder
-public class RegisterDto {
+public class UserDto {
+
+    private Long id;
     private String email;
     private String password;
     private String name;    //이름 & 닉네임
     private String defaultProfilePic;
+
 }
