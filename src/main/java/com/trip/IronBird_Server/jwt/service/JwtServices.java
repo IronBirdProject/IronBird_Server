@@ -31,7 +31,7 @@ public class JwtServices {
     private final PasswordEncoder passwordEncoder;
     private final RedisTemplate<String, Object> redisTemplate;
 
-    @Value("${JWT_SECRET}")
+    @Value("${jwt.secret}")
     private String secertKey;
 
     // 로그인 처리 및 토큰 발급
@@ -65,7 +65,7 @@ public class JwtServices {
         Claims claims = tokenProvider.parseClaims(refreshToken);
         String email = claims.getSubject();
 
-        String storedToken = (String) redisTemplate.opsForValue().get("RefreshToeken: " + email);
+        String storedToken = (String) redisTemplate.opsForValue().get("RefreshToken: " + email);
         if (!refreshToken.equals(storedToken)) {
             throw new RuntimeException("Refresh Token이 일치하지 않습니다.");
         }
