@@ -26,7 +26,7 @@ public class TokenProvider {
     public static final String AUTHORITIES_KEY = "role";
     private static final String BEARER_TYPE = "Bearer ";
     private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 30; // 30분
-    private static final long REFRESH_TOKEN_EXPIRE_TIME = 1000 * 60 * 30 * 24 * 7;
+    private static final long REFRESH_TOKEN_EXPIRE_TIME = 1000 * 60 * 30 * 24 * 7;  // 7일
     private final Key key;
     private final RedisTemplate<String, Object> redisTemplate;
 
