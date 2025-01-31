@@ -65,13 +65,13 @@ public class UserController {
     @PutMapping("/user/update/{id}")
     public ResponseEntity<?> updateUser(@PathVariable("id") Long id,
                                         @RequestBody UserDto userDto,
-                                        @RequestHeader("Authorization") String token) {
+                                        @RequestHeader("Authorization") String Bearer) {
         try {
             // 토큰 값 로그
-            log.info("Received token: {}", token);
+            log.info("Received token: {}", Bearer);
 
             // JWT에서 사용자 ID 추출
-            Long userId = jwtService.extractUserId(token);
+            Long userId = jwtService.extractUserId(Bearer);
             log.info("Extracted userId from token: {}", userId);
 
             // URL의 id와 JWT userId 비교 로그
