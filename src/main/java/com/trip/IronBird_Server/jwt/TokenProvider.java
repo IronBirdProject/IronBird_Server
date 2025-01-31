@@ -1,6 +1,7 @@
 package com.trip.IronBird_Server.jwt;
 
 import com.trip.IronBird_Server.jwt.dto.TokenDto;
+import com.trip.IronBird_Server.user.domain.entity.User;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -11,10 +12,10 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
+import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -31,17 +32,23 @@ public class TokenProvider {
     private final RedisTemplate<String, Object> redisTemplate;
 
     public TokenProvider(@Value("${jwt.secret}") String secretKey, RedisTemplate<String, Object> redisTemplate) {
-        byte[] keyBytes = Decoders.BASE64.decode(secretKey);
-        this.key = Keys.hmacShaKeyFor(keyBytes);
+        this.key = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
         this.redisTemplate = redisTemplate;
     }
 
-    public TokenDto generateTokenDto(Map<String, Object> claims){
+    public TokenDto generateTokenDto(User user){
         long now = (new Date()).getTime();
+
+        // JWT Claims 설정
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("sub", user.getEmail());  // ✅ subject를 email로 유지
+        claims.put("userId", user.getId());  // ✅ userId를 별도 필드에 추가
+        claims.put(AUTHORITIES_KEY, "ROLE_USER");
 
         //AccessToken 생성
         Date expiresIn = new Date(now  + ACCESS_TOKEN_EXPIRE_TIME);
         String accessToken = Jwts.builder()
+                .setSubject(claims.get("sub").toString())
                 .addClaims(claims)
                 .setExpiration(expiresIn)
                 .signWith(key)
@@ -59,8 +66,8 @@ public class TokenProvider {
 
         //Redis에 Refresh Token 저장
         redisTemplate.opsForValue()
-                .set("RefreshToeken: " + claims.get("sub"), refreshToken,
-                        refreshTokenExpiresIn.getTime() - now,
+                .set("RefreshToken: " + claims.get("sub"), refreshToken,
+                        REFRESH_TOKEN_EXPIRE_TIME,
                         TimeUnit.MILLISECONDS);
 
         //TokenDto 객체 반환
@@ -80,8 +87,7 @@ public class TokenProvider {
         // 권한 정보가 없을 경우 기본 권한을 설정하거나 예외 처리
         Collection<? extends GrantedAuthority> authorities;
         if (claims.get(AUTHORITIES_KEY) == null || claims.get(AUTHORITIES_KEY).toString().isEmpty()) {
-            log.warn("경고: 권한 정보가 없는 토큰입니다. 기본 USER 권한을 설정합니다.");
-            authorities = List.of(new SimpleGrantedAuthority("ROLE_USER"));  // 기본 권한 설정
+            throw new RuntimeException("권한 정보가 없는 토큰입니다.");
         } else {
             // 클레임에서 권한 정보 가져오기
             authorities = Arrays.stream(claims.get(AUTHORITIES_KEY).toString().split(","))
@@ -90,7 +96,7 @@ public class TokenProvider {
         }
 
         // UserDetails 객체를 만들어서 Authentication 반환
-        UserDetails principal = new User(claims.getSubject(), "", authorities);
+        UserDetails principal = new org.springframework.security.core.userdetails.User(claims.getSubject(), "", authorities);
 
         return new UsernamePasswordAuthenticationToken(principal, "", authorities);
     }

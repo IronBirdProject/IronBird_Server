@@ -31,8 +31,6 @@ public class JwtServices {
     private final PasswordEncoder passwordEncoder;
     private final RedisTemplate<String, Object> redisTemplate;
 
-    @Value("${jwt.secret}")
-    private String secertKey;
 
     // 로그인 처리 및 토큰 발급
     public TokenDto login(String email, String password) {
@@ -45,38 +43,33 @@ public class JwtServices {
             throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
         }
 
-        // 사용자 권한 설정
-        Map<String, Object> claims = new HashMap<>();
-        claims.put("sub", user.getEmail());  // subject
-        claims.put("role", "ROLE_USER");    // 권한 정보
-
         // JWT 토큰 생성
-        return tokenProvider.generateTokenDto(claims);
+        return tokenProvider.generateTokenDto(user);
     }
 
-    // Access Token 재발급
-    public TokenDto refreshToken(String refreshToken) {
-        // 토큰 검증
-        if (!tokenProvider.validateToken(refreshToken)) {
-            throw new RuntimeException("유효하지 않은 Refresh Token입니다.");
-        }
-
-        // Redis에서 사용자 Refresh Token 확인
-        Claims claims = tokenProvider.parseClaims(refreshToken);
-        String email = claims.getSubject();
-
-        String storedToken = (String) redisTemplate.opsForValue().get("RefreshToken: " + email);
-        if (!refreshToken.equals(storedToken)) {
-            throw new RuntimeException("Refresh Token이 일치하지 않습니다.");
-        }
-
-        // 새로운 Access Token 생성
-        Map<String, Object> newClaims = new HashMap<>();
-        newClaims.put("sub", email);
-        newClaims.put("role", claims.get(AUTHORITIES_KEY));
-
-        return tokenProvider.generateTokenDto(newClaims);
-    }
+//    // Access Token 재발급
+//    public TokenDto refreshToken(String refreshToken) {
+//        // 토큰 검증
+//        if (!tokenProvider.validateToken(refreshToken)) {
+//            throw new RuntimeException("유효하지 않은 Refresh Token입니다.");
+//        }
+//
+//        // Redis에서 사용자 Refresh Token 확인
+//        Claims claims = tokenProvider.parseClaims(refreshToken);
+//        String email = claims.getSubject();
+//
+//        String storedToken = (String) redisTemplate.opsForValue().get("RefreshToken: " + email);
+//        if (!refreshToken.equals(storedToken)) {
+//            throw new RuntimeException("Refresh Token이 일치하지 않습니다.");
+//        }
+//
+//        // 새로운 Access Token 생성
+//        Map<String, Object> newClaims = new HashMap<>();
+//        newClaims.put("sub", email);
+//        newClaims.put("role", claims.get(AUTHORITIES_KEY));
+//
+//        return tokenProvider.generateTokenDto(newClaims);
+//    }
 
     public Long extractUserId(String token) {
 
@@ -84,19 +77,12 @@ public class JwtServices {
             String cleanedToken = token.replace("Bearer ", "");
             log.info("Cleaned token: {}", cleanedToken);
 
-            // SecretKey 설정
-            Key key = Keys.hmacShaKeyFor(secertKey.getBytes(StandardCharsets.UTF_8));
-
             // Claims 추출
-            Claims claims = Jwts.parserBuilder()
-                    .setSigningKey(key)
-                    .build()
-                    .parseClaimsJws(cleanedToken)
-                    .getBody();
+            Claims claims = tokenProvider.parseClaims(cleanedToken);
             log.info("Extracted claims: {}", claims);
 
             // 사용자 ID 추출
-            Long userId = Long.parseLong(claims.getSubject());
+            Long userId = Long.parseLong(claims.get("userId").toString());
             log.info("Extracted userId from claims: {}", userId);
 
 

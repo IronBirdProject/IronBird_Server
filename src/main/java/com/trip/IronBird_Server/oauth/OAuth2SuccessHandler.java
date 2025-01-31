@@ -87,7 +87,7 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
             log.info("Successfully authenticated user: {}", loggedUser.getEmail());
 
             // JWT 토큰 생성
-            TokenDto tokenDto = tokenProvider.generateTokenDto(createUserPayload(loggedUser));
+            TokenDto tokenDto = tokenProvider.generateTokenDto(loggedUser);
             if (tokenDto == null || tokenDto.getAccessToken() == null) {
                 log.error("Failed to generate JWT token");
                 response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Failed to generate token");

@@ -1,8 +1,11 @@
 package com.trip.IronBird_Server.jwt.controller;
 
 import com.trip.IronBird_Server.common.exception.CustomException;
+import com.trip.IronBird_Server.common.exception.ErrorCode;
 import com.trip.IronBird_Server.jwt.TokenProvider;
 import com.trip.IronBird_Server.jwt.dto.TokenDto;
+import com.trip.IronBird_Server.user.domain.entity.User;
+import com.trip.IronBird_Server.user.infrastructure.UserRepository;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -17,15 +20,17 @@ import org.springframework.web.client.RestTemplate;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
-import static com.trip.IronBird_Server.common.exception.ErrorCode.INVALID_REFRESH_TOKEN;
+import static com.trip.IronBird_Server.common.exception.ErrorCode.*;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/token")
 public class TokenController {
 
+    private static final ErrorCode USER_NOT_FOUND = NO_PERMISSION;
     private final RedisTemplate<String, Object> redisTemplate;
     private final TokenProvider tokenProvider;
+    private final UserRepository userRepository;
 
     @PostMapping("/reissue")
     public ResponseEntity<TokenDto> reissue(@RequestBody TokenDto.Reissue token) {
@@ -47,12 +52,15 @@ public class TokenController {
         }
 
         // 새로운 Access Token 및 Refresh Token 생성
-        TokenDto newToken = tokenProvider.generateTokenDto(tokenProvider.parseClaims(token.getAccessToken()));
+        String email = tokenProvider.parseClaims(token.getAccessToken()).getSubject();
+        User user = userRepository.findByEmail(email)
+                        .orElseThrow(()-> new CustomException(USER_NOT_FOUND));
+        TokenDto newToken = tokenProvider.generateTokenDto(user);
 
         // Redis에 새로운 Refresh Token 저장
-        redisTemplate.opsForValue()
-                .set(key, newToken.getRefreshToken(), newToken.getRefreshTokenExpiresIn() - new Date().getTime(),
-                        TimeUnit.MILLISECONDS);
+        long ttl = (newToken.getRefreshTokenExpiresIn() - System.currentTimeMillis()) / 1000; // ms → s 변환
+        redisTemplate.opsForValue().set(key, newToken.getRefreshToken(), ttl, TimeUnit.SECONDS);
+
 
         // 새로 발급된 토큰 반환
         return ResponseEntity.ok(newToken);
