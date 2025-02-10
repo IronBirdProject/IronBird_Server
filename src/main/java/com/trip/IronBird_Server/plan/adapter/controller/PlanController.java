@@ -1,5 +1,6 @@
 package com.trip.IronBird_Server.plan.adapter.controller;
 
+import com.trip.IronBird_Server.common.custom.CustomUserDetails;
 import com.trip.IronBird_Server.plan.adapter.dto.PlanDto;
 import com.trip.IronBird_Server.plan.application.service.PlanService;
 import lombok.RequiredArgsConstructor;
@@ -43,7 +44,9 @@ public class PlanController {
      **/
     @PostMapping("/create")
     public ResponseEntity<?> createPlan(@RequestBody PlanDto planDto,
-                                        @AuthenticationPrincipal Long userIdFromToken){
+                                        @AuthenticationPrincipal CustomUserDetails userDetails){
+
+        Long userIdFromToken = userDetails.getId();
         PlanDto createdPlan = planService.createPlan(planDto,userIdFromToken);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdPlan);
     }

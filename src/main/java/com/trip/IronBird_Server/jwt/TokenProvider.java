@@ -41,8 +41,8 @@ public class TokenProvider {
 
         // JWT Claims 설정
         Map<String, Object> claims = new HashMap<>();
-        claims.put("sub", user.getEmail());  // ✅ subject를 email로 유지
-        claims.put("userId", user.getId());  // ✅ userId를 별도 필드에 추가
+        claims.put("sub", user.getEmail());
+        claims.put("userId", user.getId());
         claims.put(AUTHORITIES_KEY, "ROLE_USER");
 
         //AccessToken 생성
