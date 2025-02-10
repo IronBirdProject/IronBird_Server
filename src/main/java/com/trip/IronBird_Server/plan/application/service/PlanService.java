@@ -52,7 +52,7 @@ public class PlanService {
     //플랜 생성 서비스
     @Transactional
     public PlanDto createPlan(PlanDto planDto, Long userIdFromToken){
-        User user = userRepository.findById(planDto.getUserId())
+        User user = userRepository.findById(userIdFromToken)
                 .orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + userIdFromToken));
 
 
