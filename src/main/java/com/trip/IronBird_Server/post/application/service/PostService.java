@@ -45,47 +45,46 @@ public class PostService {
 
 
     // 게시물 생성
-    public PostDto createPost(PostDto postDto, String email){
-        //사용자 조회
+    public PostDto createPost(PostDto postDto, String email) {
+        // 사용자 조회
         User user = userRepository.findByEmail(email)
-                .orElseThrow(()-> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
 
-        //Plan 조회
+        // Plan 조회
         Plan plan = null;
-
-        if (postDto.getPlanId() != null){
-            Optional<Plan> optionalPlan = planRepository.findById(postDto.getPlanId());
-            if (optionalPlan.isPresent()){
-                plan = optionalPlan.get();  //플랜이 있다면 가져와서 할당
-            }else {
-                log.warn("경고 : 해당 플랜을 찾을 수 없습니다. 플랜 없이 게시물을 생성합니다.");
-            }
-        }else {
-            log.warn("알림 : 플랜ID가 제공되지 않았습니다. 플랜 없이 게시물을 생성합니다.");
+        if (postDto.getPlanId() != null) {
+            plan = planRepository.findById(postDto.getPlanId())
+                    .orElseThrow(() -> new IllegalArgumentException("Plan ID: " + postDto.getPlanId() + "를 찾을 수 없습니다."));
+        } else {
+            log.warn("Plan ID가 제공되지 않았습니다. Plan 없이 게시물을 생성합니다.");
         }
 
-        // Post 엔티티에 생성 및 저장
+        LocalDateTime now = LocalDateTime.now();
+
+        // Post 엔티티 생성 및 저장
         Post post = Post.builder()
                 .title(postDto.getTitle())
                 .detail(postDto.getDetail())
                 .user(user)
                 .plan(plan)
-                .createTime(LocalDateTime.now())
-                .modifyTime(LocalDateTime.now())
+                .createTime(now)
+                .modifyTime(now)
                 .build();
 
-        postRepository.save(post);
+        Post savedPost = postRepository.save(post);
+        log.debug("Saved Post Plan ID: {}", savedPost.getPlan() != null ? savedPost.getPlan().getId() : "NULL");
 
         return PostDto.builder()
-                .id(post.getId())
-                .title(postDto.getTitle())
-                .detail(postDto.getDetail())
+                .id(savedPost.getId())
+                .title(savedPost.getTitle())
+                .detail(savedPost.getDetail())
                 .userId(user.getId())
-                .planId(plan != null ? plan.getId() : null)
-                .createTime(post.getCreateTime())
-                .modifyTime(post.getModifyTime())
+                .planId(savedPost.getPlan() != null ? savedPost.getPlan().getId() : null)
+                .createTime(savedPost.getCreateTime())
+                .modifyTime(savedPost.getModifyTime())
                 .build();
     }
+
 
     // 게시물 수정
     @Transactional
