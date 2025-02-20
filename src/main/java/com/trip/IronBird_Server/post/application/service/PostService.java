@@ -35,7 +35,7 @@ public class PostService {
                         .id(post.getId())
                         .title(post.getTitle())
                         .detail(post.getDetail())
-                        .userId(post.getUser().getId())
+                        .userName(post.getUser().getName())
                         .planId(post.getPlan() != null ? post.getPlan().getId() : null) // Plan 이 null 이라면 null 반환
                         .createTime(post.getCreateTime())
                         .modifyTime(post.getModifyTime())
@@ -78,7 +78,7 @@ public class PostService {
                 .id(savedPost.getId())
                 .title(savedPost.getTitle())
                 .detail(savedPost.getDetail())
-                .userId(user.getId())
+                .userName(user.getName())
                 .planId(savedPost.getPlan() != null ? savedPost.getPlan().getId() : null)
                 .createTime(savedPost.getCreateTime())
                 .modifyTime(savedPost.getModifyTime())
@@ -105,7 +105,7 @@ public class PostService {
         // 저장된 결과를 PostDto로 반환
         return PostDto.builder()
                 .id(updatePost.getId())
-                .userId(updatePost.getUser().getId())
+                .userName(updatePost.getUser().getName())
                 .title(updatePost.getTitle())
                 .detail(updatePost.getDetail())
                 .planId(updatePost.getPlan().getId())
