@@ -18,7 +18,7 @@ public class PostDto {
     private long id;
     private String title;
     private String detail;
-    private Long userId;  //엔티티 대신 ID만 전달
+    private String userName;  //ID 대신 사용자 이름
     private Long planId;  //엔티티 대신 ID만 전달
     private LocalDateTime createTime;
     private LocalDateTime modifyTime;
