@@ -30,6 +30,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
 	implementation 'io.netty:netty-resolver-dns-native-macos:4.1.68.Final'
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
 	// https://mvnrepository.com/artifact/io.netty/netty-resolver-dns-native-macos
 	runtimeOnly group: 'io.netty', name: 'netty-resolver-dns-native-macos', version: '4.1.114.Final'

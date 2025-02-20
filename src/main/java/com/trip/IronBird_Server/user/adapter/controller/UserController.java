@@ -1,5 +1,6 @@
 package com.trip.IronBird_Server.user.adapter.controller;
 
+import com.trip.IronBird_Server.common.custom.CustomUserDetails;
 import com.trip.IronBird_Server.jwt.dto.TokenDto;
 import com.trip.IronBird_Server.jwt.service.JwtServices;
 import com.trip.IronBird_Server.user.adapter.dto.RegisterDto;
@@ -10,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -94,4 +96,28 @@ public class UserController {
         }
     }
 
+
+    /**
+     * @회원 정보 삭제
+     *
+     */
+    @DeleteMapping("/user/{id}")
+    public ResponseEntity<String> deleteUser(@PathVariable("id") Long userId,
+                                             @AuthenticationPrincipal CustomUserDetails customUserDetails){
+        if(customUserDetails == null){
+
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("인증 정보가 없습니다.");
+        }
+
+        Long authenticatedUserId = customUserDetails.getId();
+        if(!authenticatedUserId.equals(userId)){
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("권한이 없습니다.");
+        }
+
+        userService.DeleteUser(userId);
+
+        return ResponseEntity.ok("회원이 성공적으로 삭제 되었습니다.");
+
+
+    }
 }
