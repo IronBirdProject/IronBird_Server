@@ -1,5 +1,6 @@
-package com.trip.IronBird_Server.plan.adapter.dto;
+package com.trip.IronBird_Server.plan.adapter.mapper;
 
+import com.trip.IronBird_Server.plan.adapter.dto.PlanDto;
 import com.trip.IronBird_Server.plan.domain.Plan;
 import org.springframework.stereotype.Component;
 

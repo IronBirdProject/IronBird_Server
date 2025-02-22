@@ -2,12 +2,11 @@ package com.trip.IronBird_Server.post.adapter.controller;
 
 import com.trip.IronBird_Server.common.custom.CustomUserDetails;
 import com.trip.IronBird_Server.post.adapter.dto.PostDto;
-import com.trip.IronBird_Server.post.application.service.PostService;
+import com.trip.IronBird_Server.post.application.service.PostServiceImp;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,7 +16,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class PostController {
 
-    private final PostService postService;
+    private final PostServiceImp postServiceImp;
 
     /**
      * 등록된 포스팅 전체 가져오는 컨트롤러
@@ -25,7 +24,7 @@ public class PostController {
     @GetMapping
     public List<PostDto> getAllPost(){
 
-        return postService.getAllPosts();
+        return postServiceImp.getAllPosts();
     }
 
 
@@ -39,7 +38,7 @@ public class PostController {
             throw new IllegalArgumentException("인증 정보가 없습니다.");
         }
         String email = userDetails.getEmail();  // 이메일 가져오기
-        PostDto createdPost = postService.createPost(postDto, email);
+        PostDto createdPost = postServiceImp.createPost(postDto, email);
         return new ResponseEntity<>(createdPost, HttpStatus.CREATED);
     }
 
@@ -51,7 +50,7 @@ public class PostController {
     @PutMapping("/update/{postId}")
     public ResponseEntity<?> updatePost(@RequestBody PostDto postDto,
                                         @PathVariable("postId") Long postId){
-        PostDto updateDto = postService.updatePost(postId, postDto);
+        PostDto updateDto = postServiceImp.updatePost(postId, postDto);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(updateDto);
     }
@@ -62,7 +61,7 @@ public class PostController {
     @DeleteMapping("/{postId}")
     public ResponseEntity<String> deletePost(@PathVariable("postId") Long postId){
         try{
-            postService.deletePost(postId);
+            postServiceImp.deletePost(postId);
 
             return ResponseEntity.ok("게시물이 삭제되었습니다.");
         }catch (Exception e){
