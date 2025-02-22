@@ -1,6 +1,6 @@
 package com.trip.IronBird_Server.plan.application.service;
 
-import com.trip.IronBird_Server.plan.adapter.dto.PlanMapper;
+import com.trip.IronBird_Server.plan.adapter.mapper.PlanMapper;
 import com.trip.IronBird_Server.plan.domain.Plan;
 import com.trip.IronBird_Server.plan.adapter.dto.PlanDto;
 import com.trip.IronBird_Server.plan.infrastructure.PlanRepository;
