@@ -1,5 +1,6 @@
 package com.trip.IronBird_Server.post.adapter.controller;
 
+import com.trip.IronBird_Server.common.custom.CustomUserDetails;
 import com.trip.IronBird_Server.post.adapter.dto.PostDto;
 import com.trip.IronBird_Server.post.application.service.PostService;
 import lombok.RequiredArgsConstructor;
@@ -18,8 +19,9 @@ public class PostController {
 
     private final PostService postService;
 
-
-
+    /**
+     * 등록된 포스팅 전체 가져오는 컨트롤러
+     */
     @GetMapping
     public List<PostDto> getAllPost(){
 
@@ -32,14 +34,17 @@ public class PostController {
      */
     @PostMapping("/create")
     public ResponseEntity<PostDto> createPost(@RequestBody PostDto postDto,
-                                              @AuthenticationPrincipal UserDetails userDetails) {
+                                              @AuthenticationPrincipal CustomUserDetails userDetails) {
         if (userDetails == null) {
             throw new IllegalArgumentException("인증 정보가 없습니다.");
         }
-        String email = userDetails.getUsername();  // 이메일 가져오기
+        String email = userDetails.getEmail();  // 이메일 가져오기
         PostDto createdPost = postService.createPost(postDto, email);
         return new ResponseEntity<>(createdPost, HttpStatus.CREATED);
     }
+
+
+
     /**
      * 포스팅 수정 컨트롤러
      */

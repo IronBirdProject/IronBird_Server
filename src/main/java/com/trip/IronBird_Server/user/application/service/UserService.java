@@ -60,7 +60,7 @@ public class UserService {
 
         // 사용자 정보 업데이트
         if (userDto.getEmail() != null) user.setEmail(userDto.getEmail());
-        if (userDto.getPassword() != null) user.setPassword(userDto.getPassword());
+        if (userDto.getPassword() != null) user.setPassword(passwordEncoder.encode(userDto.getPassword()));
         if (userDto.getName() != null) user.setName(userDto.getName());
         if (userDto.getDefaultProfilePic() != null) user.setProfilePic(userDto.getDefaultProfilePic());
 
@@ -68,6 +68,15 @@ public class UserService {
 
         // 저장
         return userRepository.save(user);
+    }
+
+    public void DeleteUser(Long id){
+        User user = userRepository.findById(id)
+                .orElseThrow(()-> new RuntimeException("해당 유저를 찾을 수 없습니다."));
+
+        userRepository.delete(user);
+
+
     }
 
 }

@@ -1,5 +1,6 @@
 package com.trip.IronBird_Server.jwt;
 
+import com.trip.IronBird_Server.common.custom.CustomUserDetails;
 import com.trip.IronBird_Server.jwt.dto.TokenDto;
 import com.trip.IronBird_Server.user.domain.entity.User;
 import io.jsonwebtoken.*;
@@ -84,10 +85,23 @@ public class TokenProvider {
         // 토큰 복호화
         Claims claims = parseClaims(accessToken);
 
+        // 'userId'가 String으로 저장될 수 있으므로 Long으로 변환
+        Long userId;
+        try {
+            Object userIdObj = claims.get("userId");
+            if(userIdObj == null){
+                throw new RuntimeException("JWT 토큰에서 userId를 찾을 수 없습니다.");
+            }
+            userId = Long.parseLong(userIdObj.toString());
+        }catch (NumberFormatException e){
+            throw new RuntimeException("userId를 Long 타입으로 변환하는 중 오류 발생");
+        }
+
         // 권한 정보가 없을 경우 기본 권한을 설정하거나 예외 처리
         Collection<? extends GrantedAuthority> authorities;
         if (claims.get(AUTHORITIES_KEY) == null || claims.get(AUTHORITIES_KEY).toString().isEmpty()) {
-            throw new RuntimeException("권한 정보가 없는 토큰입니다.");
+            log.warn("경고: 권한 정보가 없는 토큰입니다. 기본 USER 권한을 설정합니다.");
+            authorities = List.of(new SimpleGrantedAuthority("ROLE_USER")); //기본 권한 설정
         } else {
             // 클레임에서 권한 정보 가져오기
             authorities = Arrays.stream(claims.get(AUTHORITIES_KEY).toString().split(","))
@@ -95,10 +109,12 @@ public class TokenProvider {
                     .collect(Collectors.toList());
         }
 
-        // UserDetails 객체를 만들어서 Authentication 반환
-        UserDetails principal = new org.springframework.security.core.userdetails.User(claims.getSubject(), "", authorities);
+        // CustomUserDetail 사용
+        CustomUserDetails userDetails = new CustomUserDetails(userId, claims.getSubject(), authorities.toString());
+        log.info("JWT 인증 완료 - 사용자 ID: {}, 이메일: {}", userId, claims.getSubject());
 
-        return new UsernamePasswordAuthenticationToken(principal, "", authorities);
+
+        return new UsernamePasswordAuthenticationToken(userDetails, "", authorities);
     }
 
 
