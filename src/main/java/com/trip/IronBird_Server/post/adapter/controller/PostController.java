@@ -5,6 +5,7 @@ import com.trip.IronBird_Server.post.adapter.dto.PostDto;
 import com.trip.IronBird_Server.post.application.service.PostServiceImp;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -31,14 +32,15 @@ public class PostController {
     /**
      * 포스팅 생성 컨트롤러
      */
-    @PostMapping("/create")
-    public ResponseEntity<PostDto> createPost(@RequestBody PostDto postDto,
+    @PostMapping(value = "/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<PostDto> createPost(@ModelAttribute PostDto postDto,
                                               @AuthenticationPrincipal CustomUserDetails userDetails) {
         if (userDetails == null) {
             throw new IllegalArgumentException("인증 정보가 없습니다.");
         }
         String email = userDetails.getEmail();  // 이메일 가져오기
         PostDto createdPost = postServiceImp.createPost(postDto, email);
+
         return new ResponseEntity<>(createdPost, HttpStatus.CREATED);
     }
 

@@ -3,8 +3,10 @@ package com.trip.IronBird_Server.post.application.service;
 import com.trip.IronBird_Server.plan.domain.Plan;
 import com.trip.IronBird_Server.plan.infrastructure.PlanRepository;
 import com.trip.IronBird_Server.post.adapter.mapper.PostMapper;
+import com.trip.IronBird_Server.post.domain.Image;
 import com.trip.IronBird_Server.post.domain.Post;
 import com.trip.IronBird_Server.post.adapter.dto.PostDto;
+import com.trip.IronBird_Server.post.infrastructure.ImageRepository;
 import com.trip.IronBird_Server.post.infrastructure.PostRepository;
 import com.trip.IronBird_Server.user.domain.entity.User;
 import com.trip.IronBird_Server.user.infrastructure.UserRepository;
@@ -13,9 +15,16 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -26,6 +35,7 @@ public class PostServiceImp implements PostService {
     private final PostRepository postRepository;
     private final UserRepository userRepository;
     private final PlanRepository planRepository;
+    private final ImageRepository imageRepository;
     private final PostMapper postMapper;
 
 
@@ -77,6 +87,20 @@ public class PostServiceImp implements PostService {
         Post savedPost = postRepository.save(post);
         log.debug("Saved Post Plan ID: {}", savedPost.getPlan() != null ? savedPost.getPlan().getId() : "NULL");
 
+        // 이미지 저장
+        if(postDto.getUploadImage() != null && !postDto.getUploadImage().isEmpty()){
+            List<Image> imageList = new ArrayList<>();
+            for (MultipartFile file : postDto.getUploadImage()){
+                String imageUrl = saveFile(file);
+
+                Image image = Image.builder()
+                        .imageUrl(imageUrl)
+                        .post(savedPost)
+                        .build();
+            }
+            imageRepository.saveAll(imageList);
+        }
+
         return postMapper.postDto(savedPost);
     }
 
@@ -108,7 +132,11 @@ public class PostServiceImp implements PostService {
     }
 
 
-    //게시물 삭제
+    /**
+     * 게시물 삭제
+     * @param
+     * @param id
+     */
     @Override
     public void deletePost(Long id){
         Post post = postRepository.findById(id)
@@ -131,6 +159,27 @@ public class PostServiceImp implements PostService {
         post.setLikeCount(post.getLikeCount() + 1);
         postRepository.save(post);
     }
+
+    /**
+     * 이미지 관리
+     *
+     */
+
+    private String saveFile(MultipartFile file){
+        String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
+        Path filePath = Paths.get("uploads/" + fileName);
+
+        try{
+            Files.createDirectories(filePath.getParent());
+            Files.write(filePath, file.getBytes());
+        }catch(IOException e){
+            throw new RuntimeException("파일 저장 중 오류 발생" , e);
+        }
+
+        return "/uploads/" + fileName;
+    }
+
+
 
 
 
