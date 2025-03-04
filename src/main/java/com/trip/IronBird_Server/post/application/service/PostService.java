@@ -11,4 +11,5 @@ public interface PostService {
     public PostDto updatePost(Long id, PostDto postDto);
     public void deletePost(Long id);
     public void incrementLike(Long postId);
+
 }

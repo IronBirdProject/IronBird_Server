@@ -9,6 +9,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Data
@@ -44,5 +46,8 @@ public class Post {
 
     @Column(name = "liked_count")
     private Long likeCount = 0L;    // Default = 0;
+
+    @OneToMany
+    private List<Image> image = new ArrayList<>();  // 이미지 업로드
 
 }
