@@ -48,6 +48,6 @@ public class Post {
     private Long likeCount = 0L;    // Default = 0;
 
     @OneToMany
-    private List<Image> image = new ArrayList<>();  // 이미지 업로드
+    private List<Image> images = new ArrayList<>();  // 이미지 업로드
 
 }

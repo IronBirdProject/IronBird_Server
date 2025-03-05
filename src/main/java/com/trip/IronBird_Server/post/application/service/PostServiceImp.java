@@ -90,13 +90,15 @@ public class PostServiceImp implements PostService {
         // 이미지 저장
         if(postDto.getUploadImage() != null && !postDto.getUploadImage().isEmpty()){
             List<Image> imageList = new ArrayList<>();
-            for (MultipartFile file : postDto.getUploadImage()){
-                String imageUrl = saveFile(file);
+            for (Image file : postDto.getUploadImage()){
+                String imageUrl = saveFile((MultipartFile) file);
 
                 Image image = Image.builder()
                         .imageUrl(imageUrl)
                         .post(savedPost)
                         .build();
+
+                imageList.add(image);
             }
             imageRepository.saveAll(imageList);
         }
@@ -160,11 +162,12 @@ public class PostServiceImp implements PostService {
         postRepository.save(post);
     }
 
+
     /**
      * 이미지 관리
+     * @param file
      *
      */
-
     private String saveFile(MultipartFile file){
         String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
         Path filePath = Paths.get("uploads/" + fileName);
