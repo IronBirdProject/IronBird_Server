@@ -25,6 +25,6 @@ public class PostDto {
     private Long planId;  //엔티티 대신 ID만 전달
     private LocalDateTime createTime;
     private LocalDateTime modifyTime;
-    private List<MultipartFile> uploadImage;
+    private List<Image> uploadImage;
 
 }

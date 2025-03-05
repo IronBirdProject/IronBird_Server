@@ -13,9 +13,10 @@ public class PostMapper {
                 .title(post.getTitle())
                 .detail(post.getDetail())
                 .userName(post.getUser().getName())
-                .planId(post.getPlan().getId())
+                .planId(post.getPlan() != null ? post.getPlan().getId() : null)
                 .createTime(post.getCreateTime())
                 .modifyTime(post.getModifyTime())
+                .uploadImage(post.getImages())
                 .build();
     }
 
