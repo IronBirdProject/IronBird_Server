@@ -14,10 +14,13 @@ import com.trip.IronBird_Server.user.infrastructure.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -40,6 +43,10 @@ public class PostServiceImp implements PostService {
     private final PostMapper postMapper;
 
 
+    @Value ("${file.upload-dir}")
+    private String uploadFolder;
+
+
     /**
      * 모든 게시물 조회
      * @return
@@ -60,7 +67,9 @@ public class PostServiceImp implements PostService {
      */
     @Override
     @Transactional
-    public PostDto createPost(PostDto postDto, UploadImageDto uploadImageDto, String email) {
+    public PostDto createPost(PostDto postDto,
+                              UploadImageDto uploadImageDto,
+                              String email) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
 
@@ -73,6 +82,30 @@ public class PostServiceImp implements PostService {
                 .build();
 
         Post savedPost = postRepository.save(post);
+
+        //이미지 업로드 추가
+        if(uploadImageDto.getImages() != null && !uploadImageDto.getImages().isEmpty()){
+            for(MultipartFile file : uploadImageDto.getImages()){
+                UUID uuid = UUID.randomUUID();
+                String imagefileName = uuid +  "_" + file.getOriginalFilename();
+
+                File destinationFile = new File(uploadFolder + imagefileName);
+
+                try {
+                    file.transferTo(destinationFile);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+
+                Image image = Image.builder()
+                        .imageUrl("/boardImages/" + imagefileName)
+                        .post(savedPost)
+                        .build();
+
+                imageRepository.save(image);
+            }
+
+        }
 
         return postMapper.postDto(savedPost);
     }
