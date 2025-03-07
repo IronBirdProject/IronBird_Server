@@ -1,8 +1,11 @@
 package com.trip.IronBird_Server.post.adapter.mapper;
 
 import com.trip.IronBird_Server.post.adapter.dto.PostDto;
+import com.trip.IronBird_Server.post.domain.Image;
 import com.trip.IronBird_Server.post.domain.Post;
 import org.springframework.stereotype.Component;
+
+import java.util.stream.Collectors;
 
 @Component
 public class PostMapper {
@@ -16,7 +19,9 @@ public class PostMapper {
                 .planId(post.getPlan() != null ? post.getPlan().getId() : null)
                 .createTime(post.getCreateTime())
                 .modifyTime(post.getModifyTime())
-                .uploadImage(post.getImages())
+                .uploadImage(post.getImages().stream()
+                        .map(Image::getImageUrl)
+                        .collect(Collectors.toList()))
                 .build();
     }
 

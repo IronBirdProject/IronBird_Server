@@ -2,6 +2,7 @@ package com.trip.IronBird_Server.post.application.service;
 
 import com.trip.IronBird_Server.plan.domain.Plan;
 import com.trip.IronBird_Server.plan.infrastructure.PlanRepository;
+import com.trip.IronBird_Server.post.adapter.dto.UploadImageDto;
 import com.trip.IronBird_Server.post.adapter.mapper.PostMapper;
 import com.trip.IronBird_Server.post.domain.Image;
 import com.trip.IronBird_Server.post.domain.Post;
@@ -58,50 +59,20 @@ public class PostServiceImp implements PostService {
      * @return
      */
     @Override
-    public PostDto createPost(PostDto postDto, String email) {
-        // 사용자 조회
+    @Transactional
+    public PostDto createPost(PostDto postDto, UploadImageDto uploadImageDto, String email) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
 
-        // Plan 조회
-        Plan plan = null;
-        if (postDto.getPlanId() != null) {
-            plan = planRepository.findById(postDto.getPlanId())
-                    .orElseThrow(() -> new IllegalArgumentException("Plan ID: " + postDto.getPlanId() + "를 찾을 수 없습니다."));
-        } else {
-            log.warn("Plan ID가 제공되지 않았습니다. Plan 없이 게시물을 생성합니다.");
-        }
-
-        LocalDateTime now = LocalDateTime.now();
-
-        // Post 엔티티 생성 및 저장
         Post post = Post.builder()
                 .title(postDto.getTitle())
                 .detail(postDto.getDetail())
                 .user(user)
-                .plan(plan)
-                .createTime(now)
-                .modifyTime(now)
+                .createTime(LocalDateTime.now())
+                .modifyTime(LocalDateTime.now())
                 .build();
 
         Post savedPost = postRepository.save(post);
-        log.debug("Saved Post Plan ID: {}", savedPost.getPlan() != null ? savedPost.getPlan().getId() : "NULL");
-
-        // 이미지 저장
-        if(postDto.getUploadImage() != null && !postDto.getUploadImage().isEmpty()){
-            List<Image> imageList = new ArrayList<>();
-            for (Image file : postDto.getUploadImage()){
-                String imageUrl = saveFile((MultipartFile) file);
-
-                Image image = Image.builder()
-                        .imageUrl(imageUrl)
-                        .post(savedPost)
-                        .build();
-
-                imageList.add(image);
-            }
-            imageRepository.saveAll(imageList);
-        }
 
         return postMapper.postDto(savedPost);
     }
@@ -161,29 +132,6 @@ public class PostServiceImp implements PostService {
         post.setLikeCount(post.getLikeCount() + 1);
         postRepository.save(post);
     }
-
-
-    /**
-     * 이미지 관리
-     * @param file
-     *
-     */
-    private String saveFile(MultipartFile file){
-        String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
-        Path filePath = Paths.get("uploads/" + fileName);
-
-        try{
-            Files.createDirectories(filePath.getParent());
-            Files.write(filePath, file.getBytes());
-        }catch(IOException e){
-            throw new RuntimeException("파일 저장 중 오류 발생" , e);
-        }
-
-        return "/uploads/" + fileName;
-    }
-
-
-
 
 
 }
