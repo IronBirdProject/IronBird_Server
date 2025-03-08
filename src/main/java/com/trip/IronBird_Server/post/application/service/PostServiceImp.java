@@ -73,12 +73,17 @@ public class PostServiceImp implements PostService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
 
+        Plan plan = planRepository.findById(postDto.getPlanId())
+                .orElseThrow(() -> new IllegalArgumentException("해당 Plan이 존재하지 않습니다."));
+
         Post post = Post.builder()
                 .title(postDto.getTitle())
                 .detail(postDto.getDetail())
                 .user(user)
+                .plan(plan)
                 .createTime(LocalDateTime.now())
                 .modifyTime(LocalDateTime.now())
+                .images(new ArrayList<>())
                 .build();
 
         Post savedPost = postRepository.save(post);

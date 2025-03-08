@@ -1,5 +1,7 @@
 package com.trip.IronBird_Server.post.adapter.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.trip.IronBird_Server.common.custom.CustomUserDetails;
 import com.trip.IronBird_Server.post.adapter.dto.PostDto;
 import com.trip.IronBird_Server.post.adapter.dto.UploadImageDto;
@@ -37,13 +39,22 @@ public class PostController {
      * 포스팅 생성 컨트롤러
      */
     @PostMapping(value = "/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<PostDto> createPost(@RequestPart PostDto postDto,
-                                              @RequestPart List<MultipartFile> images,
+    public ResponseEntity<PostDto> createPost(@RequestParam("postDto") String postDtoJson,
+                                              @RequestParam("images") List<MultipartFile> images,
                                               @AuthenticationPrincipal CustomUserDetails userDetails) {
         if (userDetails == null) {
             throw new IllegalArgumentException("인증 정보가 없습니다.");
         }
-        String email = userDetails.getEmail();  // 이메일 가져오기
+        String email = userDetails.getEmail();
+
+        // JSON 문자열을 PostDto 객체로 변환
+        ObjectMapper objectMapper = new ObjectMapper();
+        PostDto postDto;
+        try {
+            postDto = objectMapper.readValue(postDtoJson, PostDto.class);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("JSON 파싱 실패", e);
+        }
 
         UploadImageDto uploadImageDto = new UploadImageDto();
         uploadImageDto.setImages(images);
@@ -51,6 +62,10 @@ public class PostController {
         PostDto createdPost = postServiceImp.createPost(postDto, uploadImageDto, email);
         return new ResponseEntity<>(createdPost, HttpStatus.CREATED);
     }
+
+
+
+
 
 
 
