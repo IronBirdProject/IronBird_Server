@@ -47,7 +47,6 @@ public class Post {
     @Column(name = "liked_count")
     private Long likeCount = 0L;    // Default = 0;
 
-
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Image> images = new ArrayList<>();  // 이미지 업로드
 
