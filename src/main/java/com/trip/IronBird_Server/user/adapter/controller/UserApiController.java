@@ -59,7 +59,6 @@ public class UserApiController {
         //Generate JWT
         TokenDto tokenDto = tokenProvider.generateTokenDto(user);
 
-
         // return JWT
         return ResponseEntity.ok(tokenDto);
     }
