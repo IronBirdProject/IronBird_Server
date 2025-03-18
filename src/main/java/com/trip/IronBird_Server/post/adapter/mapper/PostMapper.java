@@ -15,6 +15,7 @@ public class PostMapper {
                 .id(post.getId())
                 .title(post.getTitle())
                 .detail(post.getDetail())
+                .userId(post.getUser().getId())
                 .userName(post.getUser().getName())
                 .planId(post.getPlan() != null ? post.getPlan().getId() : null)
                 .createTime(post.getCreateTime())
