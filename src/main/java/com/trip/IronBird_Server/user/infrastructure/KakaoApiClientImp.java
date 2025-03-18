@@ -43,7 +43,8 @@ public class KakaoApiClientImp implements KakaoService {
         return new KakaoUserInfoDto(
                 json.getLong("id"),
                 kakaoAccount.getString("email"),
-                kakaoAccount.getJSONObject("profile").getString("nickname")
+                kakaoAccount.getJSONObject("profile").getString("nickname"),
+                kakaoAccount.getString("profileImageUrl")
         );
     }
 }
