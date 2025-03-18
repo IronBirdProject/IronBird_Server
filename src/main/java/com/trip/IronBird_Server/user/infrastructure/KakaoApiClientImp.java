@@ -39,12 +39,13 @@ public class KakaoApiClientImp implements KakaoService {
     private KakaoUserInfoDto parseKakaoUser(String responseBody){
         JSONObject json = new JSONObject(responseBody);
         JSONObject kakaoAccount = json.getJSONObject("kakao_account");
+        JSONObject profile = json.getJSONObject("profile");
 
         return new KakaoUserInfoDto(
                 json.getLong("id"),
                 kakaoAccount.getString("email"),
-                kakaoAccount.getJSONObject("profile").getString("nickname"),
-                kakaoAccount.getString("profileImageUrl")
+                profile.getString("nickname"),
+                profile.getString("profileImageUrl")
         );
     }
 }
