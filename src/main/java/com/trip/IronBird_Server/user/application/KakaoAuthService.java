@@ -5,7 +5,6 @@ import com.trip.IronBird_Server.jwt.dto.TokenDto;
 import com.trip.IronBird_Server.user.adapter.dto.KakaoUserInfoDto;
 import com.trip.IronBird_Server.user.domain.entity.User;
 import com.trip.IronBird_Server.user.domain.modeltype.OauthType;
-import com.trip.IronBird_Server.user.infrastructure.KakaoApiClientImp;
 import com.trip.IronBird_Server.user.infrastructure.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
