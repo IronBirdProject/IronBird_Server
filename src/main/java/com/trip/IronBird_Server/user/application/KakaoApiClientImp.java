@@ -1,4 +1,4 @@
-package com.trip.IronBird_Server.user.infrastructure;
+package com.trip.IronBird_Server.user.application;
 
 import com.trip.IronBird_Server.user.adapter.dto.KakaoUserInfoDto;
 import com.trip.IronBird_Server.user.application.service.KakaoService;
@@ -14,10 +14,11 @@ public class KakaoApiClientImp implements KakaoService {
 
     private final RestTemplate restTemplate;
 
+
     @Override
     public KakaoUserInfoDto getKakaoUserInfo(String accessToken) {
         HttpHeaders headers = new HttpHeaders();
-        headers.setBasicAuth(accessToken);
+        headers.setBearerAuth(accessToken);
         headers.setContentType(MediaType.APPLICATION_JSON);
 
         HttpEntity<String> entity = new HttpEntity<>(headers);
@@ -30,7 +31,7 @@ public class KakaoApiClientImp implements KakaoService {
         );
 
         if(response.getStatusCode() == HttpStatus.OK){
-            return getKakaoUserInfo(response.getBody());
+            return parseKakaoUser(response.getBody());
         }else {
             throw new RuntimeException("카카오 사용자 정보 요청 실패");
         }
