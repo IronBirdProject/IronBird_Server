@@ -1,6 +1,7 @@
 package com.trip.IronBird_Server.user.application;
 
 import com.trip.IronBird_Server.user.adapter.dto.KakaoUserInfoDto;
+import com.trip.IronBird_Server.user.application.service.KakaoApiClient;
 import com.trip.IronBird_Server.user.application.service.KakaoService;
 import lombok.RequiredArgsConstructor;
 import org.json.JSONObject;
@@ -10,7 +11,7 @@ import org.springframework.web.client.RestTemplate;
 
 @Service
 @RequiredArgsConstructor
-public class KakaoApiClientImp implements KakaoService {
+public class KakaoApiClientImp implements KakaoApiClient {
 
     private final RestTemplate restTemplate;
 
