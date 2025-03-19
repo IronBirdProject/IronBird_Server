@@ -1,6 +1,7 @@
 package com.trip.IronBird_Server.user.infrastructure;
 
 import com.trip.IronBird_Server.user.domain.entity.User;
+import com.trip.IronBird_Server.user.domain.modeltype.OauthType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -13,4 +14,5 @@ public interface UserRepository extends JpaRepository<User,Long> {
 
     boolean existsByEmail(String email);
 
+    Optional<User> findByOauthIdandOauthType(String oauthId, OauthType oauthType);
 }
