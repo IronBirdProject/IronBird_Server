@@ -24,8 +24,6 @@ import java.util.Optional;
 public class UserApiController {
 
     private final KakaoAuthService kakaoAuthService;
-    private final TokenProvider tokenProvider;
-    private final UserRepository userRepository;
 
     /**
      * KakaoLogin
@@ -36,30 +34,7 @@ public class UserApiController {
     public ResponseEntity<?> kakaoLogin(@RequestBody Map<String, String> requestBody){
         String kakaoAccessToken = requestBody.get("access_token");
 
-        //kakao 사용자 정보 가져오기
-        KakaoUserInfoDto kakaoUserInfoDto = kakaoAuthService.authenticate(kakaoAccessToken);
-
-        // 이메일로 사용자 검색
-        Optional<User> userOptional = userRepository.findByEmail(kakaoUserInfoDto.getEmail());
-
-        User user;
-        if(userOptional.isPresent()){
-            user = userOptional.get(); // 기존 사용자
-        }else {
-            // 신규 사용자 등록
-            user = User.builder()
-                    .id((kakaoUserInfoDto.getId()))
-                    .email(kakaoUserInfoDto.getEmail())
-                    .name(kakaoUserInfoDto.getNickname())
-                    .profilePic(kakaoUserInfoDto.getProfileImageUrl())
-                    .oauthType(OauthType.KAKAO)
-                    .build();
-        }
-
-        //Generate JWT
-        TokenDto tokenDto = tokenProvider.generateTokenDto(user);
-
-        // return JWT
+        TokenDto tokenDto =kakaoAuthService.kakaoLogin(kakaoAccessToken);
         return ResponseEntity.ok(tokenDto);
     }
 
