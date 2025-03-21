@@ -13,5 +13,5 @@ import java.util.List;
 public class TourAreaItems {
 
     @JsonProperty("item")
-    private List<TourAreaItem> itemList;
+    private List<TourAreaItem> item;
 }

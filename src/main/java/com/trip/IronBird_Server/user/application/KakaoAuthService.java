@@ -27,7 +27,7 @@ public class KakaoAuthService implements KakaoService {
         KakaoUserInfoDto kakaoUserInfoDto = kakaoApiClientImp.getKakaoUserInfo(kakaoAccessToken);
 
         // 기존 회원 확인
-        Optional<User> userOptional = userRepository.findByOauthIdandOauthType(
+        Optional<User> userOptional = userRepository.findByOauthIdAndOauthType(
                 String.valueOf(kakaoUserInfoDto.getId()), OauthType.KAKAO
         );
 
