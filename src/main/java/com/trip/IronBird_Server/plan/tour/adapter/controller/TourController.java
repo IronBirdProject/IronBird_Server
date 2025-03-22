@@ -3,6 +3,7 @@ package com.trip.IronBird_Server.plan.tour.adapter.controller;
 import com.trip.IronBird_Server.plan.tour.adapter.dto.TourAreaRoot;
 import com.trip.IronBird_Server.plan.tour.application.service.TourService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,7 +19,7 @@ public class TourController {
     @GetMapping("/areas")
     public ResponseEntity<?> getTourList(){
         TourAreaRoot tourAreaRoot = tourService.getTourAreaList();
-
-        return ResponseEntity.ok(tourAreaRoot.getResponse().getBody().getItems());
+        return ResponseEntity.ok(tourAreaRoot); // 전체 반환
     }
+
 }
