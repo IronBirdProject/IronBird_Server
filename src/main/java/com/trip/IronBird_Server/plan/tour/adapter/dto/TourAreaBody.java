@@ -1,5 +1,6 @@
 package com.trip.IronBird_Server.plan.tour.adapter.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -8,10 +9,11 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class TourAreaBody {
 
     @JsonProperty("items")
-    private TourAreaItem items;
+    private TourAreaItems items;
 
     @JsonProperty("numOfRows")
     private int numOfRows;
@@ -21,6 +23,5 @@ public class TourAreaBody {
 
     @JsonProperty("totalCount")
     private int totalCount;
-
-
 }
+
