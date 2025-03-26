@@ -4,7 +4,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.trip.IronBird_Server.plan.tour.adapter.dto.TourAreaItem;
 import com.trip.IronBird_Server.plan.tour.adapter.dto.TourAreaRoot;
-import com.trip.IronBird_Server.plan.tour.domain.Tour;
+import com.trip.IronBird_Server.plan.tour.domain.TourArea;
+import com.trip.IronBird_Server.plan.tour.domain.TourAreaCity;
+import com.trip.IronBird_Server.plan.tour.infrastructure.TourAreaCityRepository;
 import com.trip.IronBird_Server.plan.tour.infrastructure.TourAreaRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,10 +17,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 @Slf4j
@@ -30,18 +29,21 @@ public class TourService {
     private final String serviceKey;
     private final ObjectMapper objectMapper;
     private final TourAreaRepository tourAreaRepository;
+    private final TourAreaCityRepository tourAreaCityRepository;
 
     public TourService(RestTemplate restTemplate,
                        @Value("${tourapi.url}") String apiUrl,
                        @Value("${tourapi.service-key}") String serviceKey,
                        @Value("${tourapicity.url}" ) String cityApiUrl,
-                       ObjectMapper objectMapper, TourAreaRepository tourAreaRepository) {
+                       ObjectMapper objectMapper, TourAreaRepository tourAreaRepository,
+                       TourAreaCityRepository tourAreaCityRepository) {
         this.restTemplate = restTemplate;
         this.apiUrl = apiUrl;
         this.cityApiUrl = cityApiUrl;
         this.serviceKey = serviceKey;
         this.objectMapper = objectMapper;
         this.tourAreaRepository = tourAreaRepository;
+        this.tourAreaCityRepository = tourAreaCityRepository;
     }
 
 
@@ -68,7 +70,7 @@ public class TourService {
             List<TourAreaItem> items = result.getResponse().getBody().getItems().getItem();
             for (TourAreaItem item : items) {
 
-                    Tour tourArea = Tour.builder()
+                     TourArea tourArea = TourArea.builder()
                             .rnum(item.getRnum())
                             .code(item.getCode())
                             .name(item.getName())
@@ -97,10 +99,7 @@ public class TourService {
      * @return
      */
 
-    public Map<String, List<TourAreaItem>> getTourAreaCitiesGrouped() {
-        Map<String, List<TourAreaItem>> cityMap = new LinkedHashMap<>(); // 순서 보장
-
-        // 1. 지역 코드와 이름 매핑
+    public void getTourAreaCitiesGroupedAndSave() {
         Map<Integer, String> areaCodeNameMap = Map.ofEntries(
                 Map.entry(1, "서울"),
                 Map.entry(2, "인천"),
@@ -128,45 +127,72 @@ public class TourService {
                 int areaCode = entry.getKey();
                 String areaName = entry.getValue();
 
-                String fullCityUrl = cityApiUrl
-                        + "?serviceKey=" + encodedServiceKey
-                        + "&areaCode=" + areaCode
-                        + "&numOfRows=100"
-                        + "&pageNo=1&MobileOS=ETC&MobileApp=AppTest&_type=json";
+                String fullCityUrl = cityApiUrl +
+                        "?serviceKey=" + encodedServiceKey +
+                        "&areaCode=" + areaCode +
+                        "&numOfRows=1000&pageNo=1&MobileOS=ETC&MobileApp=AppTest&_type=json";
 
                 log.info("Requesting AreaCode: {} ({})", areaCode, areaName);
-                URI url = new URI(fullCityUrl);
-                String response = restTemplate.getForObject(url, String.class);
+                URI uri = new URI(fullCityUrl);
+                String response = restTemplate.getForObject(uri, String.class);
 
                 if (response.startsWith("<")) {
-                    log.error("API 에러 응답: {}", response);
+                    log.error("XML 응답 (오류): {}", response);
                     continue;
                 }
 
                 TourAreaRoot result = objectMapper.readValue(response, TourAreaRoot.class);
 
                 if (result == null || result.getResponse() == null) {
-                    log.error("{} 응답 구조가 잘못되었습니다", areaName);
+                    log.error("{} 응답 구조 오류", areaName);
                     continue;
                 }
 
                 if (!"0000".equals(result.getResponse().getHeader().getResultCode())) {
-                    log.error("{} Tour API 호출 실패: {}", areaName, result.getResponse().getHeader().getResultMsg());
+                    log.error("{} Tour API 오류: {}", areaName, result.getResponse().getHeader().getResultMsg());
                     continue;
                 }
 
                 List<TourAreaItem> items = result.getResponse().getBody().getItems().getItem();
-                if (items != null) {
-                    cityMap.put(areaName, items);
+                if (items == null) continue;
+
+
+                // 1. 지역(시/도) 엔티티 저장
+                // 같은 이름의 TourArea가 이미 존재하는 확인
+
+                Optional<TourArea> existingTourArea = tourAreaRepository.findByName(areaName);
+
+                TourArea tourArea;
+                if(existingTourArea.isPresent()){
+                    // 이미 존재하는 상위 지역이 있으면, 해당 TourArea를 사용
+                    tourArea = existingTourArea.get();
+                }else{
+                    tourArea = tourAreaRepository.save(
+                            TourArea.builder()
+                                    .code(String.valueOf(areaCode))
+                                    .name(areaName)
+                                    .rnum(areaCode)
+                                    .build()
+                    );
+                }
+
+                // 2. 하위 지역(시군구) 저장
+                for (TourAreaItem item : items) {
+                    tourAreaCityRepository.save(
+                            TourAreaCity.builder()
+                                    .rnum(item.getRnum())
+                                    .code(item.getCode())
+                                    .name(item.getName())
+                                    .tourArea(tourArea) // 상위 지역 연결
+                                    .build()
+                    );
                 }
             }
-
-            return cityMap;
-
         } catch (Exception e) {
-            throw new RuntimeException("Tour API 호출 또는 파싱 실패", e);
+            throw new RuntimeException("Tour API 파싱 또는 DB 저장 실패", e);
         }
     }
+
 
 
 
