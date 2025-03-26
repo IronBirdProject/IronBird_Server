@@ -27,11 +27,13 @@ public class TourController {
         return ResponseEntity.ok(tourAreaRoot); // 전체 반환
     }
 
-    @GetMapping("/CityArea")
-    public ResponseEntity<?> getTourCityList() {
-        Map<String, List<TourAreaItem>> tourAreaItems = tourService.getTourAreaCitiesGrouped();
-        return ResponseEntity.ok(tourAreaItems);  // 바로 List 리턴
+    @GetMapping("/CityArea/save")
+    public ResponseEntity<String> saveTourCityList() {
+        tourService.getTourAreaCitiesGroupedAndSave();
+        return ResponseEntity.ok("지역 코드 및 시군구 저장 완료");
     }
+
+
 
 
 }
