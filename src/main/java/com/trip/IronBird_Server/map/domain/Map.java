@@ -6,26 +6,30 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Entity
-@Table(name = "location_info")
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
+//@Entity
+//@Table(name = "location_info")
+//@Data
+//@NoArgsConstructor
+//@AllArgsConstructor
+//@Builder
 public class Map {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    /**
+     * 임시 주석
+     */
 
-    private Double latitude; // 경도
-    private Double longitdue; // 위도
-
-    private String addressName; //전체 주소
-    private String regionCityName; // 시/도 (ex: 서울특별시)
-    private String regionTownName;  // 시/군/구 (ex: 종로구)
-    private String regionVillageName; // 동/읍/면 (ex: 세종로)
-
-    private String roadAddress; // 도로명 주소
+//    @Id
+//    @GeneratedValue(strategy = GenerationType.IDENTITY)
+//    private Long id;
+//
+//    private Double latitude; // 경도
+//    private Double longitdue; // 위도
+//
+//    private String addressName; //전체 주소
+//    private String regionCityName; // 시/도 (ex: 서울특별시)
+//    private String regionTownName;  // 시/군/구 (ex: 종로구)
+//    private String regionVillageName; // 동/읍/면 (ex: 세종로)
+//
+//    private String roadAddress; // 도로명 주소
 
 }
