@@ -18,5 +18,6 @@ public class AllowedUrls {
             "/api/plan/**",
             "/api/post/**",
             "/api/tour/**",
+            "/api/location/**"
     };
 }
