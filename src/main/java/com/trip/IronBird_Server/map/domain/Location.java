@@ -22,9 +22,9 @@ public class Location {
     private Double longitdue; // 위도
 
     private String addressName; //전체 주소
-    private String regionCityName; // 시/도 (ex: 서울특별시)
-    private String regionTownName;  // 시/군/구 (ex: 종로구)
-    private String regionVillageName; // 동/읍/면 (ex: 세종로)
+    private String region1DepthName; // 시/도 (ex: 서울특별시)
+    private String region2DepthName;  // 시/군/구 (ex: 종로구)
+    private String region3DepthName; // 동/읍/면 (ex: 세종로)
 
     private String roadAddress; // 도로명 주소
 
