@@ -25,7 +25,7 @@ public class PlanMapper {
                 .modifiedTime(plan.getModified_time())
                 .schedules( plan.getSchedules() != null
                         ? plan.getSchedules().stream()
-                        .map(scheduleMapper::schedulMapper)
+                        .map(scheduleMapper::toDto)
                         .collect(Collectors.toList())
                         : new ArrayList<>() )
                 .build();

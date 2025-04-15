@@ -32,6 +32,6 @@ public class ScheduleServiceImp implements ScheduleService {
                 .build();
 
         Schedule savedSchedule = scheduleRepository.save(schedule);
-        return scheduleMapper.schedulMapper(savedSchedule);
+        return scheduleMapper.toDto(savedSchedule);
     }
 }

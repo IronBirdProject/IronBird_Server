@@ -4,10 +4,11 @@ import com.trip.IronBird_Server.plan.adapter.dto.ScheduleDto;
 import com.trip.IronBird_Server.plan.domain.Schedule;
 import org.springframework.stereotype.Component;
 
+
 @Component
 public class ScheduleMapper {
 
-    public ScheduleDto schedulMapper(Schedule schedule){
+    public ScheduleDto toDto(Schedule schedule){
         return ScheduleDto.builder()
                 .id(schedule.getId())
                 .day(schedule.getDay())
@@ -18,6 +19,7 @@ public class ScheduleMapper {
                 .planId(schedule.getPlan() != null ? schedule.getPlan().getId() : null)
                 .build();
     }
+
 
 
 

@@ -75,7 +75,6 @@ dependencies {
 	implementation group: 'com.google.api-client', name: 'google-api-client', version: '2.7.0'
 	implementation 'com.google.maps:google-maps-places:0.23.0'
 
-
 }
 
 tasks.named('test') {
