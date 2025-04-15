@@ -4,6 +4,7 @@ import com.trip.IronBird_Server.plan.adapter.mapper.PlanMapper;
 import com.trip.IronBird_Server.plan.domain.Plan;
 import com.trip.IronBird_Server.plan.adapter.dto.PlanDto;
 import com.trip.IronBird_Server.plan.infrastructure.PlanRepository;
+import com.trip.IronBird_Server.plan.infrastructure.ScheduleRepository;
 import com.trip.IronBird_Server.user.domain.entity.User;
 import com.trip.IronBird_Server.user.infrastructure.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -60,6 +61,7 @@ public class PlanServiceImp implements PlanService {
 
 
         Plan plan = Plan.builder()
+                .destination(planDto.getDestination())
                 .startedDate(planDto.getStartedDate())
                 .endDate(planDto.getEndDate())
                 .user(user) //user 설정
@@ -82,7 +84,7 @@ public class PlanServiceImp implements PlanService {
 
 
         //변경할 데이터 가져와서 엔티티에 등록
-        exitPlan.updateDates(planDto.getStartedDate(), planDto.getEndDate());
+        //exitPlan.updateDates(planDto.getDestination(), planDto.getStartedDate(), planDto.getEndDate());
 
         //수정된 데이터 저장
         Plan updatePlan = planRepository.save(exitPlan);

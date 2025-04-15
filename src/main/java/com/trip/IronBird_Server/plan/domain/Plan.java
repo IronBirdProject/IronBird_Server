@@ -6,15 +6,18 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.checkerframework.checker.units.qual.N;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
+@AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@Builder
 public class Plan {
 
     @Id
@@ -24,6 +27,8 @@ public class Plan {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+    private String destination;
 
     @Column(name="started_Date")
     private String startedDate;
@@ -39,19 +44,7 @@ public class Plan {
     @Column(name="modified_time")
     private LocalDateTime modified_time;
 
-
-    @Builder
-    public Plan(User user, String startedDate, String endDate, LocalDateTime created_time, LocalDateTime modified_time) {
-
-        this.user = user;
-        this.startedDate = startedDate;
-        this.endDate = endDate;
-        this.created_time = created_time;
-        this.modified_time = modified_time;
-    }
-    public void updateDates(String startedDate, String endDate) {
-        this.startedDate = startedDate;
-        this.endDate = endDate;
-        this.modified_time = LocalDateTime.now();
-    }
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "plan")
+    @Column(name="schedules_id", nullable = false)
+    private List<Schedule> schedules = new ArrayList<>();
 }
