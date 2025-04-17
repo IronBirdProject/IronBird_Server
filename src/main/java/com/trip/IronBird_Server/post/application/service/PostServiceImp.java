@@ -108,6 +108,7 @@ public class PostServiceImp implements PostService {
                         .build();
 
                 imageRepository.save(image);
+                savedPost.getImages().add(image);
             }
 
         }

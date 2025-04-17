@@ -18,6 +18,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import static com.trip.IronBird_Server.jwt.TokenProvider.AUTHORITIES_KEY;
 
@@ -43,33 +44,27 @@ public class JwtServices {
             throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
         }
 
-        // JWT 토큰 생성
-        return tokenProvider.generateTokenDto(user);
+
+        TokenDto tokenDto = tokenProvider.generateTokenDto(user);
+
+        // 현재 시간을 밀리초 단위로 가져옴
+        long currentTimeMillis = System.currentTimeMillis();
+
+        // RT (Refresh Token) TTL 계산
+        long ttlSeconds = (tokenDto.getRefreshTokenExpiresIn() - currentTimeMillis) / 1000;
+
+        if(ttlSeconds <= 0){
+            ttlSeconds = 7*24*60*60;
+        }
+
+
+        // Redis에 Refresh 저장
+        String redisKey = "RefreshToken: " + String.valueOf(user.getId()).trim();
+        redisTemplate.opsForValue().set(redisKey, tokenDto.getRefreshToken(), ttlSeconds, TimeUnit.SECONDS);
+        log.info("Saved RefreshToken in Redis : key={}, value={}, ttl={} seconds", redisKey,tokenDto.getRefreshToken(),ttlSeconds);
+        return tokenDto;
     }
 
-//    // Access Token 재발급
-//    public TokenDto refreshToken(String refreshToken) {
-//        // 토큰 검증
-//        if (!tokenProvider.validateToken(refreshToken)) {
-//            throw new RuntimeException("유효하지 않은 Refresh Token입니다.");
-//        }
-//
-//        // Redis에서 사용자 Refresh Token 확인
-//        Claims claims = tokenProvider.parseClaims(refreshToken);
-//        String email = claims.getSubject();
-//
-//        String storedToken = (String) redisTemplate.opsForValue().get("RefreshToken: " + email);
-//        if (!refreshToken.equals(storedToken)) {
-//            throw new RuntimeException("Refresh Token이 일치하지 않습니다.");
-//        }
-//
-//        // 새로운 Access Token 생성
-//        Map<String, Object> newClaims = new HashMap<>();
-//        newClaims.put("sub", email);
-//        newClaims.put("role", claims.get(AUTHORITIES_KEY));
-//
-//        return tokenProvider.generateTokenDto(newClaims);
-//    }
 
     public Long extractUserId(String token) {
 
