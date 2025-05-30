@@ -3,6 +3,7 @@ package com.trip.IronBird_Server.user.adapter.controller;
 import com.trip.IronBird_Server.common.custom.CustomUserDetails;
 import com.trip.IronBird_Server.jwt.dto.TokenDto;
 import com.trip.IronBird_Server.jwt.service.JwtServices;
+import com.trip.IronBird_Server.user.adapter.dto.LoginDto;
 import com.trip.IronBird_Server.user.adapter.dto.RegisterDto;
 import com.trip.IronBird_Server.user.adapter.dto.UserDto;
 import com.trip.IronBird_Server.user.application.service.UserService;
@@ -52,8 +53,9 @@ public class UserController {
      * @return
      */
     @PostMapping("/login")
-    public ResponseEntity<TokenDto> login(@RequestBody RegisterDto loginDto){
-        TokenDto tokenDto = jwtService.login(loginDto.getEmail(), loginDto.getPassword());
+    public ResponseEntity<TokenDto> login(
+            @RequestBody LoginDto loginDto){
+        TokenDto tokenDto = jwtService.login(loginDto.getUserName(), loginDto.getPassword());
 
         return ResponseEntity.ok(tokenDto);
     }

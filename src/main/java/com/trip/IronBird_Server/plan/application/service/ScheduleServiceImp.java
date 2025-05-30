@@ -1,5 +1,6 @@
 package com.trip.IronBird_Server.plan.application.service;
 
+import com.trip.IronBird_Server.plan.adapter.dto.ScheduleCreateDto;
 import com.trip.IronBird_Server.plan.adapter.dto.ScheduleDto;
 import com.trip.IronBird_Server.plan.adapter.mapper.ScheduleMapper;
 import com.trip.IronBird_Server.plan.domain.Plan;
@@ -18,16 +19,16 @@ public class ScheduleServiceImp implements ScheduleService {
     private final ScheduleMapper scheduleMapper;
 
     @Override
-    public ScheduleDto createSchedule(ScheduleDto scheduleDto, Long planId) {
+    public ScheduleDto createSchedule(ScheduleCreateDto scheduleCreateDto, Long planId) {
         Plan plan = planRepository.findById(planId)
                 .orElseThrow(() -> new IllegalArgumentException("Plan not found with id: " + planId));
 
         Schedule schedule = Schedule.builder()
-                .day(scheduleDto.getDay())
-                .cost(scheduleDto.getCost())
-                .description(scheduleDto.getDescription())
-                .time(scheduleDto.getTime())
-                .memo(scheduleDto.getMemo())
+                .day(scheduleCreateDto.getDay())
+                .cost(scheduleCreateDto.getCost())
+                .description(scheduleCreateDto.getDescription())
+                .time(scheduleCreateDto.getTime())
+                .memo(scheduleCreateDto.getMemo())
                 .plan(plan)
                 .build();
 

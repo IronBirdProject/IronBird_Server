@@ -1,5 +1,7 @@
 package com.trip.IronBird_Server.plan.application.service;
 
+import com.trip.IronBird_Server.plan.adapter.dto.PlanCreateDto;
+import com.trip.IronBird_Server.plan.adapter.dto.PlanPreviewDto;
 import com.trip.IronBird_Server.plan.adapter.mapper.PlanMapper;
 import com.trip.IronBird_Server.plan.domain.Plan;
 import com.trip.IronBird_Server.plan.adapter.dto.PlanDto;
@@ -9,12 +11,15 @@ import com.trip.IronBird_Server.user.domain.entity.User;
 import com.trip.IronBird_Server.user.infrastructure.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.java.Log;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -41,29 +46,32 @@ public class PlanServiceImp implements PlanService {
      * @return
      */
     @Override
-    public List<PlanDto> getPlansByUserId(Long userId){
-        return planRepository.findByUserId(userId).stream()
-                .map(planMapper::toDto)
+    public List<PlanPreviewDto> getPlansByUserId(Long userId){
+        List<PlanPreviewDto> planPreviewDtos = planRepository.findByUserId(userId).stream()
+                .map(planMapper::toDtoPreview)
                 .collect(Collectors.toList());
+        log.info(planPreviewDtos.toString());
+        return planPreviewDtos;
     }
 
 
     /**
      * 플랜 생성 서비스
-     * @param planDto
+     * @param planCreateDto
      * @param userIdFromToken
      * @return
      */
     @Override
-    public PlanDto createPlan(PlanDto planDto, Long userIdFromToken){
+    public PlanDto createPlan(PlanCreateDto planCreateDto, Long userIdFromToken){
         User user = userRepository.findById(userIdFromToken)
                 .orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + userIdFromToken));
 
 
         Plan plan = Plan.builder()
-                .destination(planDto.getDestination())
-                .startedDate(planDto.getStartedDate())
-                .endDate(planDto.getEndDate())
+                .title(planCreateDto.getTitle())
+                .destination(planCreateDto.getDestination())
+                .startedDate(planCreateDto.getStartedDate())
+                .endDate(planCreateDto.getEndDate())
                 .user(user) //user 설정
                 .build();
 
@@ -76,17 +84,30 @@ public class PlanServiceImp implements PlanService {
 
     //플랜 수정 서비스
     @Override
-    public PlanDto updatePlan(Long id,PlanDto planDto){
+    public PlanDto updatePlan(Long id,PlanCreateDto planCreateDto){
 
         //기존 플랜 조회
         Plan exitPlan = planRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Plan Not found with ID : " + id));
 
 
-        //변경할 데이터 가져와서 엔티티에 등록
-        //exitPlan.updateDates(planDto.getDestination(), planDto.getStartedDate(), planDto.getEndDate());
+//        //변경할 데이터 가져와서 엔티티에 등록
+//        //exitPlan.updateDates(planCreateDto.getDestination(), planCreateDto.getStartedDate(), planCreateDto.getEndDate());
+//
+//        //수정된 데이터 저장
+//        Plan updatePlan = planRepository.save(exitPlan);
 
-        //수정된 데이터 저장
+        if (planCreateDto.getTitle() != null) {
+            exitPlan.setTitle(planCreateDto.getTitle());
+        }
+        if (planCreateDto.getStartedDate() != null) {
+            exitPlan.setStartedDate(planCreateDto.getStartedDate());
+        }
+        if (planCreateDto.getEndDate() != null) {
+            exitPlan.setEndDate(planCreateDto.getEndDate());
+        }
+
+        // 수정된 플랜 저장
         Plan updatePlan = planRepository.save(exitPlan);
 
         // 저장된 결과를 PlanDto로 변환하여 반환
@@ -100,6 +121,14 @@ public class PlanServiceImp implements PlanService {
                 .orElseThrow(() -> new RuntimeException("게시물을 찾을 수 없습니다."));
 
         planRepository.delete(plan);
+    }
+
+    @Override
+    public PlanDto getPlanById(Long planId) {
+        Plan plan = planRepository.findById(planId)
+                .orElseThrow(() -> new EntityNotFoundException("해당 플랜을 찾을 수 없습니다. : " + planId));
+
+        return planMapper.toDto(plan);
     }
 
 

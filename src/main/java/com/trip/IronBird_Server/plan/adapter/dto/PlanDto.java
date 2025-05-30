@@ -20,6 +20,7 @@ public class PlanDto {
     private Long userId;
     private String userName; //유저 닉네임(이름)
     private String destination;
+    private String title;
     private String startedDate;
     private String endDate;
     private LocalDateTime createdTime;

@@ -28,6 +28,8 @@ public class Plan {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    private String title;
+
     private String destination;
 
     @Column(name="started_Date")
@@ -44,7 +46,7 @@ public class Plan {
     @Column(name="modified_time")
     private LocalDateTime modified_time;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "plan")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "plan", cascade = CascadeType.ALL, orphanRemoval = true)
     @Column(name="schedules_id", nullable = false)
     private List<Schedule> schedules = new ArrayList<>();
 }

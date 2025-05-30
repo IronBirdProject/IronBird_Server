@@ -30,11 +30,11 @@ public class TokenProvider {
     private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 30; // 30분
     private static final long REFRESH_TOKEN_EXPIRE_TIME = 1000 * 60 * 60 * 24 * 7;  // 7일
     private final Key key;
-    private final RedisTemplate<String, Object> redisTemplate;
+//    private final RedisTemplate<String, Object> redisTemplate;
 
     public TokenProvider(@Value("${jwt.secret}") String secretKey, RedisTemplate<String, Object> redisTemplate) {
         this.key = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
-        this.redisTemplate = redisTemplate;
+//        this.redisTemplate = redisTemplate;
     }
 
     public TokenDto generateTokenDto(User user){
@@ -66,11 +66,11 @@ public class TokenProvider {
                 .compact();
 
         //Redis에 Refresh Token 저장
-        String redisKey = "RefreshToken:" + claims.get("sub");
-        redisTemplate.opsForValue()
-                .set(redisKey, refreshToken,
-                        REFRESH_TOKEN_EXPIRE_TIME,
-                        TimeUnit.MILLISECONDS);
+//        String redisKey = "RefreshToken:" + claims.get("sub");
+//        redisTemplate.opsForValue()
+//                .set(redisKey, refreshToken,
+//                        REFRESH_TOKEN_EXPIRE_TIME,
+//                        TimeUnit.MILLISECONDS);
 
         //TokenDto 객체 반환
         return TokenDto.builder()
