@@ -79,6 +79,13 @@ public class TokenProvider {
                 .accessTokenExpiresIn(expiresIn.getTime())
                 .refreshTokenExpiresIn(refreshTokenExpiresIn.getTime())
                 .refreshToken(refreshToken)
+                .user(new TokenDto.UserInfo(
+                        user.getId(),
+                        user.getEmail(),
+                        user.getName(),
+                        user.getOauthType(),
+                        user.getProfilePic()
+                ))
                 .build();
     }
 
