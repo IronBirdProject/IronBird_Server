@@ -27,12 +27,13 @@ public class UserController {
 
     /**
      * 회원가입 컨트롤러
+     *
      * @param registerDto
      * @return
      */
 
     @PostMapping("/register")
-    public ResponseEntity<String> register(@RequestBody RegisterDto registerDto){
+    public ResponseEntity<String> register(@RequestBody RegisterDto registerDto) {
         //회원가입 처리
         try {
             userService.registerUser(
@@ -42,20 +43,29 @@ public class UserController {
                     registerDto.getDefaultProfilePic()
             );
             return ResponseEntity.status(HttpStatus.CREATED).body("회원가입이 성공적으로 완료되었습니다.");
-        }catch (IllegalArgumentException e){
+        } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
 
     /**
      * 로그인 컨트롤러
+     *
      * @param loginDto
      * @return
      */
     @PostMapping("/login")
     public ResponseEntity<TokenDto> login(
-            @RequestBody LoginDto loginDto){
+            @RequestBody LoginDto loginDto) {
         TokenDto tokenDto = jwtService.login(loginDto.getUserName(), loginDto.getPassword());
+        log.info(
+               "tokenDto: accessToken={}, refreshToken={}, accessTokenExpiresIn={}, refreshTokenExpiresIn={}, userInfo={}",
+                tokenDto.getAccessToken(),
+                tokenDto.getRefreshToken(),
+                tokenDto.getAccessTokenExpiresIn(),
+                tokenDto.getRefreshTokenExpiresIn(),
+                tokenDto.getUser().toString()
+        );
 
         return ResponseEntity.ok(tokenDto);
     }
@@ -63,6 +73,7 @@ public class UserController {
 
     /**
      * 회원정보 수정
+     *
      * @param id
      * @return
      */
@@ -101,18 +112,17 @@ public class UserController {
 
     /**
      * @회원 정보 삭제
-     *
      */
     @DeleteMapping("/user/{id}")
     public ResponseEntity<String> deleteUser(@PathVariable("id") Long userId,
-                                             @AuthenticationPrincipal CustomUserDetails customUserDetails){
-        if(customUserDetails == null){
+                                             @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        if (customUserDetails == null) {
 
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("인증 정보가 없습니다.");
         }
 
         Long authenticatedUserId = customUserDetails.getId();
-        if(!authenticatedUserId.equals(userId)){
+        if (!authenticatedUserId.equals(userId)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("권한이 없습니다.");
         }
 

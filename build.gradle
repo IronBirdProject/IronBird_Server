@@ -76,6 +76,7 @@ dependencies {
 	implementation group: 'com.google.api-client', name: 'google-api-client', version: '2.7.0'
 	implementation 'com.google.maps:google-maps-places:0.23.0'
 
+	implementation 'io.netty:netty-resolver-dns-native-macos:4.1.68.Final:osx-aarch_64'
 }
 
 tasks.named('test') {
