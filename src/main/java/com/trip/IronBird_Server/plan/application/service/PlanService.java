@@ -5,6 +5,7 @@ import com.trip.IronBird_Server.plan.adapter.dto.PlanDto;
 import com.trip.IronBird_Server.plan.adapter.dto.PlanPreviewDto;
 
 import java.util.List;
+import java.util.Optional;
 
 
 public interface PlanService {
@@ -14,4 +15,6 @@ public interface PlanService {
     public PlanDto updatePlan(Long id,PlanCreateDto planCreateDto); //플랜 수정
     public void deletePlan(Long id); // 플랜 삭제
     public PlanDto getPlanById(Long planId); //플랜 상세 조회
+
+    public Optional<PlanDto> getUpcomming(Long userId);
 }

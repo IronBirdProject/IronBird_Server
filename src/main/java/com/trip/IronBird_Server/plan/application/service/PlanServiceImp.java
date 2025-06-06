@@ -6,17 +6,17 @@ import com.trip.IronBird_Server.plan.adapter.mapper.PlanMapper;
 import com.trip.IronBird_Server.plan.domain.Plan;
 import com.trip.IronBird_Server.plan.adapter.dto.PlanDto;
 import com.trip.IronBird_Server.plan.infrastructure.PlanRepository;
-import com.trip.IronBird_Server.plan.infrastructure.ScheduleRepository;
 import com.trip.IronBird_Server.user.domain.entity.User;
 import com.trip.IronBird_Server.user.infrastructure.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.java.Log;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -129,6 +129,12 @@ public class PlanServiceImp implements PlanService {
                 .orElseThrow(() -> new EntityNotFoundException("해당 플랜을 찾을 수 없습니다. : " + planId));
 
         return planMapper.toDto(plan);
+    }
+
+    @Override
+    public Optional<PlanDto> getUpcomming(Long userId) {
+        String today = LocalDateTime.now().toString();
+        return planRepository.findFirstByUserIdAndStartedDateGreaterThanOrderByStartedDateAsc(userId, today);
     }
 
 
