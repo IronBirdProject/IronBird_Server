@@ -96,5 +96,14 @@ public class PlanController {
         return ResponseEntity.status(HttpStatus.CREATED).body(createSchedule);
     }
 
+    @GetMapping("/upcomming")
+    public ResponseEntity<PlanDto> getUpcommingPlan(@AuthenticationPrincipal CustomUserDetails userDetails){
+
+        Long userId = userDetails.getId();
+
+        return planService.upcommingPlan(userId).map(plan -> ResponseEntity.ok(new PlanDto(plan)))
+                .orElse(ResponseEntity.noContent().build());
+    }
+
 
 }

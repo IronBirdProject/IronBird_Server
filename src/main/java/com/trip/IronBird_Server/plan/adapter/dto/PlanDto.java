@@ -2,6 +2,7 @@ package com.trip.IronBird_Server.plan.adapter.dto;
 
 import com.trip.IronBird_Server.plan.domain.Plan;
 import com.trip.IronBird_Server.plan.domain.Schedule;
+import com.trip.IronBird_Server.user.domain.entity.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,6 +11,7 @@ import org.checkerframework.checker.units.qual.N;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Data
 @NoArgsConstructor
@@ -27,4 +29,19 @@ public class PlanDto {
 
     // 스케쥴 dto
     private List<ScheduleDto> schedules;
+
+    public PlanDto(Plan plan) {
+        this.id = plan.getId();
+        this.userId = plan.getUser().getId();
+        this.userName = plan.getUser().getName();
+        this.destination = plan.getDestination();
+        this.startedDate = plan.getStartedDate();
+        this.endDate = plan.getEndDate();
+
+
+        this.schedules = plan.getSchedules()
+                .stream()
+                .map(ScheduleDto::new)
+                .collect(Collectors.toList());
+    }
 }

@@ -9,10 +9,14 @@ import com.trip.IronBird_Server.user.domain.entity.User;
 import com.trip.IronBird_Server.user.infrastructure.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -102,5 +106,14 @@ public class PlanServiceImp implements PlanService {
         planRepository.delete(plan);
     }
 
+    /**
+    유저가 설정한 가장
+    빠른 여행일정 넘겨오는 로직
+     **/
+    @Override
+    public Optional<Plan> upcommingPlan(Long userid){
+        String today = LocalDateTime.now().toString();
+        return planRepository.findFirstByUserIdAndStartedDateGreaterThanOrderByStartedDateAsc(userid, today);
+    }
 
 }

@@ -1,8 +1,10 @@
 package com.trip.IronBird_Server.plan.application.service;
 
 import com.trip.IronBird_Server.plan.adapter.dto.PlanDto;
+import com.trip.IronBird_Server.plan.domain.Plan;
 
 import java.util.List;
+import java.util.Optional;
 
 
 public interface PlanService {
@@ -11,4 +13,6 @@ public interface PlanService {
     public PlanDto createPlan(PlanDto planDto, Long userIdFromToken); // 플랜 생성
     public PlanDto updatePlan(Long id,PlanDto planDto); //플랜 수정
     public void deletePlan(Long id); // 플랜 삭제
+
+    public Optional<Plan> upcommingPlan(Long userid);
 }
